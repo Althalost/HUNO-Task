@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+"use client";
+
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { useSession } from "@clerk/nextjs";
 
@@ -7,7 +9,7 @@ type SupabaseContext = {
   isLoaded: boolean;
 };
 const Context = createContext<SupabaseContext>({
-  supebase: null,
+  supabase: null,
   isLoaded: false,
 });
 

@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
+import {
+  ClerkProvider,
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import "./globals.css";
+import SupabaseProvider from "@/lib/supabase/SupabaseProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +36,9 @@ export default function RootLayout({
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col">{children}</body>
+        <body className={`${geistSans.className} min-h-full flex flex-col`}>
+          <SupabaseProvider>{children}</SupabaseProvider>
+        </body>
       </html>
     </ClerkProvider>
   );
