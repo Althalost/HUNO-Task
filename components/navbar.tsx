@@ -1,69 +1,120 @@
 "use client";
 
-import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs'
-import { Button } from './ui/button';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
+import { Button } from "./ui/button";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, MoreHorizontal } from "lucide-react";
+import { usePathname } from "next/navigation";
 
-export default function Navbar() {
-    const { isSignedIn, user } = useUser();
-    const pathname = usePathname();
+interface Props {
+  boardTitle?: string;
+  onEditBoard?: () => void;
+}
 
-    const isDashboardPage = pathname === "/dashboard";
-    const isBoardPage = pathname.startsWith("/boards/");
+export default function Navbar({ boardTitle, onEditBoard }: Props) {
+  const { isSignedIn, user } = useUser();
+  const pathname = usePathname();
 
-    if (isDashboardPage) {
-        return (
-            <div>
-                <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-                    <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                                HUNOTASK
-                            </h1>
-                        </div>
-                       <UserButton />
-                    </div>
-                </header>
-            </div>
-        );
-    }
+  const isDashboardPage = pathname === "/dashboard";
+  const isBoardPage = pathname.startsWith("/boards/");
 
+  if (isDashboardPage) {
     return (
+      <div>
         <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-            <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                        HUNOTASK
-                    </h1>
-                </div>
-                {isSignedIn ? (
-                    <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-4"> 
-                        <span className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-                            Welcome, { user.firstName ?? user.emailAddresses[0].emailAddress}
-                        </span>
-                        <Link href="/dashboard">
-                            <Button size="sm" className='text-xs sm:text-sm'>
-                                Go to Dashboard <ArrowRight />
-                            </Button>
-                        </Link>
-                    </div>
-                ) : (    
-                    <div>
-                        <SignInButton>
-                            <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
-                                Sign In
-                            </Button>
-                        </SignInButton>
-                        <SignUpButton>
-                            <Button size="sm" className="text-xs sm:text-sm">
-                                Sign Up
-                            </Button>
-                        </SignUpButton>
-                    </div>
-                )}
-           </div>
+          <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                HUNOTASK
+              </h1>
+            </div>
+            <UserButton />
+          </div>
         </header>
+      </div>
     );
+  }
+
+  if (isBoardPage) {
+    return (
+      <header className="bg-white border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-gray-900 shrink-0"
+              >
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="hidden sm:inline">Back to dashboard</span>
+                <span className="inline sm:hidden">Back</span>
+              </Link>
+
+              <div className="h-4 sm:h-6 w-px bg-gray-300 hidden sm:block shrink-0" />
+
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xl sm:text-2xl font-semibold text-gray-500 shrink-0">
+                  HT
+                </span>
+
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-lg font-bold text-gray-800 truncate">
+                    {boardTitle}
+                  </span>
+
+                  {onEditBoard && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 shrink-0 p-0"
+                      onClick={onEditBoard}
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div></div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+  return (
+    <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+            HUNOTASK
+          </h1>
+        </div>
+        {isSignedIn ? (
+          <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
+            <span className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+              Welcome, {user.firstName ?? user.emailAddresses[0].emailAddress}
+            </span>
+            <Link href="/dashboard">
+              <Button size="sm" className="text-xs sm:text-sm">
+                Go to Dashboard <ArrowRight />
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <SignInButton>
+              <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+                Sign In
+              </Button>
+            </SignInButton>
+            <SignUpButton>
+              <Button size="sm" className="text-xs sm:text-sm">
+                Sign Up
+              </Button>
+            </SignUpButton>
+          </div>
+        )}
+      </div>
+    </header>
+  );
 }
