@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { boardDataService, boardService } from "../services";
-import { Board, Column } from "../supabase/models";
+import { Board, Column, ColumnWithTasks } from "../supabase/models";
 import { useEffect, useState } from "react";
 import { useSupabase } from "../supabase/SupabaseProvider";
 
@@ -61,7 +61,7 @@ export function useBoards() {
 export function useBoard(boardId: string) {
   const { supabase } = useSupabase();
   const [board, setBoard] = useState<Board | null>(null);
-  const [columns, setColumns] = useState<Column[]>([]);
+  const [columns, setColumns] = useState<ColumnWithTasks[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,9 +82,27 @@ export function useBoard(boardId: string) {
         boardId,
       );
       setBoard(data.board);
-      setColumns(data.columns);
+      setColumns(data.columnsWithTasks);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load boards.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateBoard(boardId: string, updates: Partial<Board>) {
+    try {
+      const updatedBoard = await boardService.updateBoard(
+        supabase!,
+        boardId,
+        updates,
+      );
+      setBoard(updatedBoard);
+      return updatedBoard;
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to update the board.",
+      );
     } finally {
       setLoading(false);
     }
@@ -95,5 +113,6 @@ export function useBoard(boardId: string) {
     columns,
     loading,
     error,
+    updateBoard,
   };
 }
