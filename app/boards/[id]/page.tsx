@@ -3,6 +3,7 @@
 import Navbar from "@/components/navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,10 +21,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useBoard } from "@/lib/hooks/useBoards";
-import { ColumnWithTasks } from "@/lib/supabase/models";
+import { ColumnWithTasks, Task } from "@/lib/supabase/models";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Label } from "@radix-ui/react-label";
-import { Check, MoreHorizontal, PlusIcon, X } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  MoreHorizontal,
+  PlusIcon,
+  UserIcon,
+} from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { SyntheticEvent, useState } from "react";
 
@@ -65,9 +72,66 @@ function Column({
   );
 }
 
+function Task({ task }: { task: Task }) {
+  function getPriorityColor(priority: "low" | "medium" | "high"): string {
+    switch (priority) {
+      case "high":
+        return "bg-red-500";
+      case "medium":
+        return "bg-yellow-500";
+      case "low":
+        return "bg-green-500";
+      default:
+        return "bg-yellow-500";
+    }
+  }
+
+  return (
+    <div>
+      <Card className="cursor-pointer hover:shadow-md transition-shadow">
+        <CardContent className="p-3 sm:p-4">
+          <div className="space-y-2 sm:space-y-3">
+            {/* Task Header */}
+            <div className="flex items-start justify-between">
+              <h4 className="font-medium text-slate-900 text-sm leading-tight flex-1 min-w-0 pr-2">
+                {task.title}
+              </h4>
+            </div>
+            {/* Task description */}
+            <p className="text-xs text-slate-700 line-clamp-2">
+              {task.description || "No description."}
+            </p>
+
+            {/* Task Meta */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
+                {task.assignee && (
+                  <div className="flex items-center space-x-1 text-xs text-slate-500">
+                    <UserIcon className="h-4 w-4" />
+                    <span className="truncate">{task.assignee}</span>
+                  </div>
+                )}
+                {task.due_date && (
+                  <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
+                    <Calendar className="h-4 w-4" />
+                    <span className="truncate">{task.due_date}</span>
+                  </div>
+                )}
+              </div>
+              <div
+                className={`w-2 h-2 rounded-full shrink-0 ${getPriorityColor(task.priority)}`}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, updateBoard, columns } = useBoard(id);
+  const { board, updateBoard, columns, createRealTask } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -95,7 +159,14 @@ export default function BoardPage() {
     assignee?: string;
     dueDate?: string;
     priority: "low" | "medium" | "high";
-  }) {}
+  }) {
+    const targetColumn = columns[0];
+    if (!targetColumn) {
+      throw new Error("No column available to add task");
+    }
+
+    await createRealTask(targetColumn.id, taskData);
+  }
 
   async function handleCreateTask(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -111,6 +182,11 @@ export default function BoardPage() {
 
     if (taskData.title.trim()) {
       await createTask(taskData);
+
+      const trigger = document.querySelector(
+        '[data-state="open"]',
+      ) as HTMLElement;
+      if (trigger) trigger.click();
     }
   }
 
@@ -133,10 +209,6 @@ export default function BoardPage() {
             <DialogTitle className="text-2xl font-bold text-slate-800">
               Edit Board
             </DialogTitle>
-            <button
-              onClick={() => setIsEditingTitle(false)}
-              className="p-1 text-slate-500 hover:text-slate-800 transition rounded-full hover:bg-slate-100"
-            ></button>
           </DialogHeader>
 
           <form className="space-y-8 pt-2" onSubmit={handleUpdateBoard}>
@@ -350,17 +422,23 @@ export default function BoardPage() {
         </div>
 
         {/* Board Columns */}
-        <div>
+        <div
+          className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto
+            lg:pb-5 lg:px-2 lg:mx-3 lg:[&::-webkit-scrollbar]:h-2
+            lg:[&::-webkit-scrollbar-track]:bg-slate-100
+            lg:[&::-webkit-scrollbar-thumb]:bg-slate-300 lg:[&::-webkit-scrollbar-track]:rounded-full
+            space-y-4 lg:space-y-0"
+        >
           {columns.map((column, key) => (
             <Column
               key={key}
               column={column}
-              onCreateTask={() => {}}
+              onCreateTask={createTask}
               onEditColumn={() => {}}
             >
-              <div>
+              <div className="space-y-3">
                 {column.tasks.map((task, key) => (
-                  <div>{task.title}</div>
+                  <Task task={task} key={key} />
                 ))}
               </div>
             </Column>
