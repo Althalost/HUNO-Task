@@ -89,6 +89,23 @@ export const columnService = {
 
     return data;
   },
+
+  async updateColumnTitle(
+    supabase: SupabaseClient,
+    columnId: string,
+    title: string,
+  ): Promise<Column> {
+    const { data, error } = await supabase
+      .from("columns")
+      .update({ title })
+      .eq("id", columnId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return data;
+  },
 };
 
 export const taskService = {
@@ -124,6 +141,24 @@ export const taskService = {
 
     if (error) throw error;
 
+    return data;
+  },
+
+  async moveTask(
+    supabase: SupabaseClient,
+    taskId: string,
+    newColumnId: string,
+    newOrder: number,
+  ) {
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({
+        column_id: newColumnId,
+        sort_order: newOrder,
+      })
+      .eq("id", taskId);
+
+    if (error) throw error;
     return data;
   },
 };
