@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { useSession } from "@clerk/nextjs";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 type SupabaseContext = {
   supabase: SupabaseClient | null;
@@ -41,7 +42,7 @@ export default function SupabaseProvider({
   }, [session]);
   return (
     <Context.Provider value={{ supabase, isLoaded }}>
-      {!isLoaded ? <div> Loading... </div> : children}
+      {children}
     </Context.Provider>
   );
 }

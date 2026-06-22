@@ -1,6 +1,7 @@
 "use client";
 
-import Navbar from "@/components/navbar";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
+import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,12 +23,15 @@ import { useBoards } from "@/lib/hooks/useBoards";
 import { Board, boardsWithTasksCount } from "@/lib/supabase/models";
 import { useUser } from "@clerk/nextjs";
 import {
+  AlertCircle,
+  BarChart3,
   Filter,
   Grid3x3,
   List,
   Loader2,
   Plus,
   PlusIcon,
+  RefreshCw,
   Rocket,
   SearchIcon,
 } from "lucide-react";
@@ -71,24 +75,63 @@ export default function DashboardPage() {
     return matchesSearch && matchesDateRange && matchesTaskCount;
   });
 
+  function clearFilters() {
+    setFilters({
+      search: "",
+      dateRange: {
+        start: null as string | null,
+        end: null as string | null,
+      },
+      taskCount: {
+        min: null as number | null,
+        max: null as number | null,
+      },
+    });
+  }
+
   const handleCreateBoard = async () => {
     await createBoard({ title: "New Board" });
   };
 
-  // if (loading) {
-  //   return (
-  //     <div>
-  //       <Loader2 />
-  //       <span>Loading your boards...</span>
-  //       <p>{error}</p>
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
 
   if (error) {
     return (
-      <div>
-        <h2> Error loading boards </h2>
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center max-w-xl mx-auto my-8">
+        <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+          <AlertCircle className="h-6 w-6 text-red-500" />
+        </div>
+
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+          Failed to load boards
+        </h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6 leading-relaxed">
+          There was a problem connecting to Supabase. This can happen if the
+          database is waking up or if your local session has expired.
+        </p>
+
+        <div className="flex items-center gap-3">
+          <Button
+            variant="default"
+            size="sm"
+            className="h-10 px-4 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm font-medium rounded-lg"
+            onClick={() => window.location.reload()}
+          >
+            <RefreshCw className="h-4 w-4" />
+            <span>Retry connection</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 px-4 text-slate-600 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+            onClick={() => (window.location.href = "/dashboard")}
+          >
+            Reload page
+          </Button>
+        </div>
       </div>
     );
   }
@@ -108,16 +151,13 @@ export default function DashboardPage() {
           <p className="text-sm text-muted-foreground mt-1">
             Here's an overview of your boards and tasks for today.
           </p>
-          <Button className="w-full sm:w-auto" onClick={handleCreateBoard}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Board
-          </Button>
         </div>
 
-        {/* Stats */}
+        {/* stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          {/* Card 1: Total Boards */}
           <Card>
-            <CardContent className="p-4 sm-py-6">
+            <CardContent className="p-4 sm:py-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-600">
@@ -127,8 +167,8 @@ export default function DashboardPage() {
                     {boards.length}
                   </p>
                 </div>
-                <div className="h-10 w-10 sm:h-12 sm-w-12 rounded-lg bg-blue-100 flex items-center justify-center pointer-events-none select-none">
-                  <span className="text-xl sm:text-2xl font-semibold text-gray-500">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-blue-100 flex items-center justify-center pointer-events-none select-none">
+                  <span className="text-lg sm:text-xl font-semibold text-blue-600">
                     HT
                   </span>
                 </div>
@@ -136,26 +176,31 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
+          {/* Card 2: Total Tasks */}
           <Card>
-            <CardContent className="p-4 sm-py-6">
+            <CardContent className="p-4 sm:py-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Total Boards
+                    Total Tasks
                   </p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {boards.length}
+                    {boards.reduce(
+                      (acc, board) => acc + (board.tasks?.length || 0),
+                      0,
+                    )}
                   </p>
                 </div>
-                <div className="h-10 w-10 sm:h-12 sm-w-12 rounded-lg bg-green-100 flex items-center justify-center pointer-events-none select-none">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-green-100 flex items-center justify-center pointer-events-none select-none">
                   <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Card 3: Recent Activity */}
           <Card>
-            <CardContent className="p-4 sm-py-6">
+            <CardContent className="p-4 sm:py-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-600">
@@ -172,30 +217,34 @@ export default function DashboardPage() {
                     }
                   </p>
                 </div>
-                <div className="h-10 w-10 sm:h-12 sm-w-12 rounded-lg bg-slate-100 flex items-center justify-center pointer-events-none select-none">
-                  <span className="text-xl sm:text-2xl font-semibold text-gray-500">
-                    📊
-                  </span>
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-amber-100 flex items-center justify-center pointer-events-none select-none">
+                  <span className="text-xl sm:text-2xl">⚡</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Card 4: Avg. Tasks per Board */}
           <Card>
-            <CardContent className="p-4 sm-py-6">
+            <CardContent className="p-4 sm:py-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Total Boards
+                    Avg. Tasks / Board
                   </p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {boards.length}
+                    {boards.length > 0
+                      ? (
+                          boards.reduce(
+                            (acc, board) => acc + (board.tasks?.length || 0),
+                            0,
+                          ) / boards.length
+                        ).toFixed(1)
+                      : 0}
                   </p>
                 </div>
-                <div className="h-10 w-10 sm:h-12 sm-w-12 rounded-lg bg-blue-100 flex items-center justify-center pointer-events-none select-none">
-                  <span className="text-xl sm:text-2xl font-semibold text-gray-500">
-                    HT
-                  </span>
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-purple-100 flex items-center justify-center pointer-events-none select-none">
+                  <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
                 </div>
               </div>
             </CardContent>
@@ -211,36 +260,53 @@ export default function DashboardPage() {
               </h2>
               <p className="text-gray-600">Manage your projects and tasks</p>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <div className="flex items-center space-x-2 rounded bg-white border p-1">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
+              <div className="flex items-center gap-3 native-scroll">
+                <div className="inline-flex items-center rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+                  <Button
+                    variant={viewMode === "grid" ? "secondary" : "ghost"}
+                    size="icon"
+                    className={`h-8 w-8 rounded-md p-0 transition-all ${
+                      viewMode === "grid"
+                        ? "bg-white shadow-sm dark:bg-slate-950 text-slate-900 dark:text-slate-50"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                    onClick={() => setViewMode("grid")}
+                  >
+                    <Grid3x3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "secondary" : "ghost"}
+                    size="icon"
+                    className={`h-8 w-8 rounded-md p-0 transition-all ${
+                      viewMode === "list"
+                        ? "bg-white shadow-sm dark:bg-slate-950 text-slate-900 dark:text-slate-50"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                    onClick={() => setViewMode("list")}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+
                 <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  variant="outline"
                   size="sm"
-                  onClick={() => setViewMode("grid")}
+                  className="h-10 px-3 gap-2 text-slate-600 hover:text-slate-900 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 shadow-sm"
+                  onClick={() => setIsFilterOpen(true)}
                 >
-                  <Grid3x3 />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                >
-                  <List />
+                  <Filter className="h-4 w-4 text-slate-500" />
+                  <span className="text-sm font-medium">Filter</span>
                 </Button>
               </div>
 
               <Button
-                variant="outline"
                 size="sm"
-                onClick={() => setIsFilterOpen(true)}
+                className="h-10 px-4 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm font-medium rounded-lg sm:w-auto w-full transition-colors"
+                onClick={handleCreateBoard}
               >
-                <Filter />
-                Filter
-              </Button>
-
-              <Button onClick={handleCreateBoard}>
-                <PlusIcon />
-                Create Board
+                <PlusIcon className="h-4 w-4" />
+                <span>Create Board</span>
               </Button>
             </div>
           </div>
@@ -451,8 +517,12 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between pt-4 space-y-2 sm:space-y-0 sm:space-x-2">
-              <Button variant="outline">Clear Filters</Button>
-              <Button>Apply Filters</Button>
+              <Button variant="outline" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+              <Button onClick={() => setIsFilterOpen(false)}>
+                Apply Filters
+              </Button>
             </div>
           </div>
         </DialogContent>

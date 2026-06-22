@@ -33,11 +33,25 @@ export default function Navbar({
         <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 select-none cursor-default">
                 HUNOTASK
               </h1>
             </div>
-            <UserButton />
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonTrigger: {
+                    width: "36px",
+                    height: "36px",
+                    flexShrink: 0,
+                  },
+                  userButtonAvatarBox: {
+                    width: "36px",
+                    height: "36px",
+                  },
+                },
+              }}
+            />
           </div>
         </header>
       </div>
@@ -46,7 +60,7 @@ export default function Navbar({
 
   if (isBoardPage) {
     return (
-      <header className="bg-white border-b sticky top-0 z-50">
+      <header className="bg-white border-b pt-1 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -130,14 +144,18 @@ export default function Navbar({
             </Link>
           </div>
         ) : (
-          <div>
-            <SignInButton>
-              <Button variant="ghost" size="sm" className="text-xs sm:text-sm">
+          <div className="flex items-center gap-3">
+            <SignInButton mode="modal">
+              <Button
+                variant="ghost"
+                className="h-10 px-4 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer select-none rounded-xl"
+              >
                 Sign In
               </Button>
             </SignInButton>
-            <SignUpButton>
-              <Button size="sm" className="text-xs sm:text-sm">
+
+            <SignUpButton mode="modal">
+              <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-none rounded-xl">
                 Sign Up
               </Button>
             </SignUpButton>
