@@ -7,7 +7,13 @@ import {
   columnService,
   taskService,
 } from "../services";
-import { Board, Column, ColumnWithTasks, Task } from "../supabase/models";
+import {
+  Board,
+  Column,
+  ColumnWithTasks,
+  boardsWithTasksCount,
+  Task,
+} from "../supabase/models";
 import { useEffect, useState } from "react";
 import { useSupabase } from "../supabase/SupabaseProvider";
 import { Description } from "@radix-ui/react-dialog";
@@ -15,7 +21,8 @@ import { Description } from "@radix-ui/react-dialog";
 export function useBoards() {
   const { user } = useUser();
   const { supabase } = useSupabase();
-  const [boards, setBoards] = useState<Board[]>([]);
+
+  const [boards, setBoards] = useState<boardsWithTasksCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +38,10 @@ export function useBoards() {
     try {
       setLoading(true);
       setError(null);
-      const data = await boardService.getBoards(supabase!, user.id);
+      const data = await boardDataService.getBoardsWithTasks(
+        supabase!,
+        user.id,
+      );
       setBoards(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load boards.");
@@ -55,7 +65,11 @@ export function useBoards() {
           userId: user.id,
         },
       );
-      setBoards((prev) => [newBoard, ...prev]);
+      const newBoardWithTasks: boardsWithTasksCount = {
+        ...newBoard,
+        tasks: [],
+      };
+      setBoards((prev) => [newBoardWithTasks, ...prev]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create board.");
     }

@@ -32,3 +32,7 @@ export interface Task {
   sort_order: number;
   created_at: string;
 }
+
+export type boardsWithTasksCount = Board & {
+  tasks: Task[];
+};

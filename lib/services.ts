@@ -1,4 +1,4 @@
-import { Board, Column, Task } from "./supabase/models";
+import { Board, boardsWithTasksCount, Column, Task } from "./supabase/models";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const boardService = {
@@ -185,6 +185,39 @@ export const boardDataService = {
     };
   },
 
+  async getBoardsWithTasks(
+    supabase: SupabaseClient,
+    userId: string,
+  ): Promise<boardsWithTasksCount[]> {
+    const { data, error } = await supabase
+      .from("boards")
+      .select(
+        `
+        *,
+        columns (
+          tasks (
+            *
+          )
+        )
+      `,
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    if (!data) return [];
+
+    return data.map((board: any) => {
+      const allTasks =
+        board.columns?.flatMap((col: any) => col.tasks || []) || [];
+      const { columns, ...boardProps } = board;
+
+      return {
+        ...boardProps,
+        tasks: allTasks,
+      };
+    });
+  },
   async createBoardWithDefaultColumns(
     supabase: SupabaseClient,
     boardData: {
