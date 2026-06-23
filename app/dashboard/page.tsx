@@ -2,6 +2,7 @@
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import Navbar from "@/components/Navbar";
+import StatCard from "@/components/StatCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -114,6 +115,17 @@ export default function DashboardPage() {
     await createBoard({ title: "New Board" });
   };
 
+  const totalTasks = boards.reduce((acc, b) => acc + (b.tasks?.length || 0), 0);
+  const avgTasks = boards.length > 0 ? totalTasks / boards.length : 0;
+  const avgTasksDisplay = Number.isInteger(avgTasks)
+    ? avgTasks
+    : avgTasks.toFixed(1);
+  const activeThisWeek = boards.filter((board) => {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    return new Date(board.updated_at) > oneWeekAgo;
+  }).length;
+
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -176,98 +188,30 @@ export default function DashboardPage() {
 
         {/* stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Card 1: Total Boards */}
-          <Card>
-            <CardContent className="p-4 sm:py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Total Boards
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {boards.length}
-                  </p>
-                </div>
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-blue-100 flex items-center justify-center pointer-events-none select-none">
-                  <LayoutDashboard className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Card 2: Total Tasks */}
-          <Card>
-            <CardContent className="p-4 sm:py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Total Tasks
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {boards.reduce(
-                      (acc, board) => acc + (board.tasks?.length || 0),
-                      0,
-                    )}
-                  </p>
-                </div>
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-green-100 flex items-center justify-center pointer-events-none select-none">
-                  <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Card 3: Recent Activity */}
-          <Card>
-            <CardContent className="p-4 sm:py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Active This Week
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {
-                      boards.filter((board) => {
-                        const updatedAt = new Date(board.updated_at);
-                        const oneWeekAgo = new Date();
-                        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                        return updatedAt > oneWeekAgo;
-                      }).length
-                    }
-                  </p>
-                </div>
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-amber-100 flex items-center justify-center pointer-events-none select-none">
-                  <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Card 4: Avg. Tasks per Board */}
-          <Card>
-            <CardContent className="p-4 sm:py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Avg. Tasks / Board
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
-                    {boards.length > 0
-                      ? (
-                          boards.reduce(
-                            (acc, board) => acc + (board.tasks?.length || 0),
-                            0,
-                          ) / boards.length
-                        ).toFixed(1)
-                      : 0}
-                  </p>
-                </div>
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-purple-100 flex items-center justify-center pointer-events-none select-none">
-                  <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard
+            label="Total Boards"
+            value={boards.length}
+            icon={LayoutDashboard}
+            colorClass="bg-blue-100 text-blue-600"
+          />
+          <StatCard
+            label="Total Tasks"
+            value={totalTasks}
+            icon={Rocket}
+            colorClass="bg-green-100 text-green-600"
+          />
+          <StatCard
+            label="Active This Week"
+            value={activeThisWeek}
+            icon={Activity}
+            colorClass="bg-amber-100 text-amber-600"
+          />
+          <StatCard
+            label="Avg. Tasks/Board"
+            value={avgTasksDisplay}
+            icon={BarChart3}
+            colorClass="bg-purple-100 text-purple-600"
+          />
         </div>
 
         {/* Boards */}
