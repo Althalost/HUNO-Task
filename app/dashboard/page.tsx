@@ -5,15 +5,7 @@ import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import BoardCard from "@/components/BoardCard";
 import BoardFiltersDialog from "@/components/BoardFiltersDialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { usePlan } from "@/lib/contexts/PlanContext";
@@ -28,15 +20,11 @@ import {
   Grid3x3,
   LayoutDashboard,
   List,
-  Loader2,
-  Plus,
   PlusIcon,
   RefreshCw,
   Rocket,
   SearchIcon,
-  Sparkles,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateBoardPlaceholder } from "@/components/CreateBoardPlaceholder";
@@ -275,8 +263,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative mb-4 sm:sm-6">
+          <div className="relative mb-4 sm:mb-6">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               id="search"
@@ -288,9 +275,42 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Boards Grid/List */}
           {filteredBoards.length === 0 ? (
-            <div>No boards yet</div>
+            boards.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="p-4 bg-indigo-50 rounded-full mb-4">
+                  <LayoutDashboard className="h-8 w-8 text-indigo-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-1">
+                  No boards yet
+                </h3>
+                <p className="text-sm text-slate-400 mb-6 max-w-xs">
+                  Create your first board to start organizing your projects and
+                  tasks.
+                </p>
+                <Button
+                  size="sm"
+                  className="h-10 px-4 gap-2 bg-indigo-600 hover:bg-indigo-800 text-white shadow-sm font-medium rounded-lg"
+                  onClick={handleCreateBoard}
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  Create your first board
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <p className="text-sm text-slate-400">
+                  No boards match your filters.
+                </p>
+                <Button
+                  variant="ghost"
+                  className="mt-2 text-indigo-600"
+                  onClick={clearFilters}
+                >
+                  Clear filters
+                </Button>
+              </div>
+            )
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {filteredBoards.map((board) => (
