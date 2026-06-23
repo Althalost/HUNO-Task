@@ -3,7 +3,6 @@
 import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -58,11 +57,15 @@ function DroppableColumn({
   children,
   onCreateTask,
   onEditColumn,
+  openDialogId,
+  onOpenDialogChange,
 }: {
   column: ColumnWithTasks;
   children: React.ReactNode;
   onCreateTask: (taskData: any) => Promise<void>;
   onEditColumn: (column: ColumnWithTasks) => void;
+  openDialogId: string | null;
+  onOpenDialogChange: (id: string | null) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id }) as unknown as {
     setNodeRef: (element: HTMLElement | null) => void;
@@ -100,11 +103,17 @@ function DroppableColumn({
         <div className="p-2">
           {children}
           <div className="mt-2">
-            <Dialog>
+            <Dialog
+              open={openDialogId === column.id}
+              onOpenChange={(open) =>
+                onOpenDialogChange(open ? column.id : null)
+              }
+            >
               <DialogTrigger asChild>
                 <Button
                   className="w-full text-slate-500 hover:text-slate-700"
                   variant="ghost"
+                  onClick={() => onOpenDialogChange(column.id)}
                 >
                   <PlusIcon />
                   Add Task
@@ -224,27 +233,21 @@ function SortableTask({ task }: { task: Task }) {
       {...attributes}
       className="outline-none my-1 first:mt-0 last:mb-0"
     >
-      {/* Replaced Card with a plain, low-radius, flat shadow HTML div */}
       <div className="cursor-grab active:cursor-grabbing border border-slate-200 bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] hover:bg-slate-50/90 transition-colors duration-100 overflow-hidden">
-        {/* Trello-like slim label bar on top */}
         <div className={`h-1 w-full ${getPriorityColor(task.priority)}`} />
 
-        {/* Replaced CardContent with a tight-padded container block */}
         <div className="p-2">
           <div className="flex flex-col gap-0.5">
-            {/* Task Title */}
             <h4 className="font-normal text-slate-900 text-[13.5px] leading-4.25 wrap-break-word tracking-normal">
               {task.title}
             </h4>
 
-            {/* Task Description */}
             {task.description && (
               <p className="text-[11.5px] text-slate-500 line-clamp-2 leading-tight mt-0.5">
                 {task.description}
               </p>
             )}
 
-            {/* Task Meta Footer */}
             {(task.assignee || task.due_date) && (
               <div className="flex items-center gap-1.5 mt-1 pt-0.5">
                 {task.assignee && (
@@ -350,6 +353,7 @@ export default function BoardPage() {
   const [editingColumn, setEditingColumn] = useState<ColumnWithTasks | null>(
     null,
   );
+  const [openTaskDialogId, setOpenTaskDialogId] = useState<string | null>(null);
 
   const [filters, setFilters] = useState({
     priority: [] as string[],
@@ -428,11 +432,7 @@ export default function BoardPage() {
 
     if (taskData.title.trim()) {
       await createTask(taskData);
-
-      const trigger = document.querySelector(
-        '[data-state="open"]',
-      ) as HTMLElement;
-      if (trigger) trigger.click();
+      setOpenTaskDialogId(null);
     }
   }
 
@@ -524,7 +524,6 @@ export default function BoardPage() {
         await moveTask(taskId, targetColumn.id, targetColumn.tasks.length);
       }
     } else {
-      // Check to see if were dropping on another task
       const sourceColumn = columns.find((col) =>
         col.tasks.some((task) => task.id === taskId),
       );
@@ -648,7 +647,7 @@ export default function BoardPage() {
                   id="boardTitle"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="Trello App Sprin"
+                  placeholder="Board Title"
                   required
                   className="w-full h-12 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-lg text-slate-900 focus-visible:ring-slate-300 focus-visible:border-slate-300"
                 />
@@ -776,9 +775,7 @@ export default function BoardPage() {
           </DialogContent>
         </Dialog>
 
-        {/* Board Content */}
         <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
-          {/* Stats */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
               <div className="text-sm text-slate-700">
@@ -786,81 +783,8 @@ export default function BoardPage() {
                 {columns.reduce((sum, col) => sum + col.tasks.length, 0)}
               </div>
             </div>
-
-            {/* Add Task Dialog in Header*/}
-            {/* <Dialog>
-              <DialogTrigger asChild>
-                <Button className="w-full sm:w-auto">
-                  <PlusIcon />
-                  Add Task
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
-                <DialogHeader className="flex flex-cols justify-between pb-4">
-                  <DialogTitle className="text-xl font-bold text-slate-800">
-                    Create New Task
-                  </DialogTitle>
-                  <DialogDescription>Create New Task</DialogDescription>
-                  <p className="text-sm text-gray-600">
-                    Add a task to the board.
-                  </p>
-                </DialogHeader>
-                <form className="space-y-4" onSubmit={handleCreateTask}>
-                  <div className="space-y-2">
-                    <Label>Title *</Label>
-                    <Input
-                      id="title"
-                      name="title"
-                      placeholder="Enter task title"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
-                      placeholder="Enter task description"
-                      rows={3}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Assignee</Label>
-                    <Input
-                      id="assignee"
-                      name="assignee"
-                      placeholder="Who should do this?"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Priority</Label>
-                    <Select name="priority" defaultValue="medium">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["low", "medium", "high"].map((priority, key) => (
-                          <SelectItem key={key} value={priority}>
-                            {priority.charAt(0).toUpperCase() +
-                              priority.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Due Date</Label>
-                    <Input type="date" id="dueDate" name="dueDate" />
-                  </div>
-
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button type="submit">Create Task</Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog> */}
           </div>
 
-          {/* Board Columns */}
           <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
@@ -881,6 +805,8 @@ export default function BoardPage() {
                   column={column}
                   onCreateTask={handleCreateTask}
                   onEditColumn={handleEditColumn}
+                  openDialogId={openTaskDialogId}
+                  onOpenDialogChange={setOpenTaskDialogId}
                 >
                   <SortableContext
                     items={column.taskIds}
@@ -961,7 +887,7 @@ export default function BoardPage() {
               Edit Column
             </DialogTitle>
             <p className="text-sm text-gray-600">
-              UEdit the title of your column.
+              Edit the title of your column.
             </p>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleUpdateColumn}>
