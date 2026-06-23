@@ -126,3 +126,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+.cl-drawerRoot,
+.cl-drawerBackdrop,
+.cl-portal,
+[data-floating-ui-focusable] {
+  z-index: 999999 !important;
+}

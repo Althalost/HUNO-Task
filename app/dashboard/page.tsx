@@ -16,17 +16,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogContent,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePlan } from "@/lib/contexts/PlanContext";
 import { useBoards } from "@/lib/hooks/useBoards";
 import { Board, boardsWithTasksCount } from "@/lib/supabase/models";
 import { useUser } from "@clerk/nextjs";
 import {
+  Activity,
   AlertCircle,
   BarChart3,
   Filter,
   Grid3x3,
+  LayoutDashboard,
   List,
   Loader2,
   Plus,
@@ -34,15 +38,20 @@ import {
   RefreshCw,
   Rocket,
   SearchIcon,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function DashboardPage() {
   const { user } = useUser();
   const { createBoard, boards, loading, error } = useBoards();
+  const router = useRouter();
+  const { isFreeUser } = usePlan();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState<boolean>(false);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -89,7 +98,19 @@ export default function DashboardPage() {
     });
   }
 
+  function isNewBoard(createdAt: string): boolean {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return new Date(createdAt) > sevenDaysAgo;
+  }
+
+  const canCreateBoard = !isFreeUser || boards.length < 3;
+
   const handleCreateBoard = async () => {
+    if (!canCreateBoard) {
+      setShowUpgradeDialog(true);
+      return;
+    }
     await createBoard({ title: "New Board" });
   };
 
@@ -117,7 +138,7 @@ export default function DashboardPage() {
             variant="default"
             size="sm"
             className="h-10 px-4 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm font-medium rounded-lg"
-            onClick={() => window.location.reload()}
+            onClick={() => router.refresh()}
           >
             <RefreshCw className="h-4 w-4" />
             <span>Retry connection</span>
@@ -127,7 +148,7 @@ export default function DashboardPage() {
             variant="outline"
             size="sm"
             className="h-10 px-4 text-slate-600 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
-            onClick={() => (window.location.href = "/dashboard")}
+            onClick={() => router.push("/dashboard")}
           >
             Reload page
           </Button>
@@ -168,9 +189,7 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-blue-100 flex items-center justify-center pointer-events-none select-none">
-                  <span className="text-lg sm:text-xl font-semibold text-blue-600">
-                    HT
-                  </span>
+                  <LayoutDashboard className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
@@ -204,7 +223,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-600">
-                    Recent Activity
+                    Active This Week
                   </p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {
@@ -218,7 +237,7 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-amber-100 flex items-center justify-center pointer-events-none select-none">
-                  <span className="text-xl sm:text-2xl">⚡</span>
+                  <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
                 </div>
               </div>
             </CardContent>
@@ -254,11 +273,16 @@ export default function DashboardPage() {
         {/* Boards */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
-            <div>
+            <div className="w-fit sm:w-80">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 Your Boards
               </h2>
               <p className="text-gray-600">Manage your projects and tasks</p>
+              {isFreeUser && (
+                <p className=" text-sm mt-1 text-gray-600">
+                  Free plan: {boards.length}/3 boards used.
+                </p>
+              )}
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
               <div className="flex items-center gap-3 native-scroll">
@@ -302,7 +326,7 @@ export default function DashboardPage() {
 
               <Button
                 size="sm"
-                className="h-10 px-4 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm font-medium rounded-lg sm:w-auto w-full transition-colors"
+                className="h-10 px-4 gap-2 bg-indigo-600 hover:bg-indigo-800 text-white shadow-sm font-medium rounded-lg sm:w-auto w-full transition-colors"
                 onClick={handleCreateBoard}
               >
                 <PlusIcon className="h-4 w-4" />
@@ -330,14 +354,16 @@ export default function DashboardPage() {
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {filteredBoards.map((board, key) => (
-                <Link href={`/boards/${board.id}`} key={key}>
+                <Link href={`/boards/${board.id}`} key={board.id}>
                   <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <div className={`w-4 h-4 ${board.color} rounded `} />
-                        <Badge className="text-xs" variant="secondary">
-                          New
-                        </Badge>
+                        {isNewBoard(board.created_at) && (
+                          <Badge className="text-xs" variant="secondary">
+                            New
+                          </Badge>
+                        )}
                       </div>
                     </CardHeader>
                     <CardContent className="p-4 sm:p-6">
@@ -362,8 +388,8 @@ export default function DashboardPage() {
                 </Link>
               ))}
 
-              <Card className="border-2 border-dashed border-gray-300 hover:border-blue-600 transition-colors cursor-pointer group">
-                <CardContent className="p-4 sm:p-6 flex flex-col items-center  justify-center h-full min-h-50">
+              <Card className="h-full border-2 border-dashed border-gray-300 hover:border-blue-600 transition-colors cursor-pointer group flex flex-col">
+                <CardContent className="flex-1 p-4 sm:p-6 flex flex-col items-center justify-center min-h-35">
                   <PlusIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
                   <p className="text-sm sm:text-base text-gray-600 group-hover:text-blue-600 font-medium">
                     Create new board
@@ -374,7 +400,7 @@ export default function DashboardPage() {
           ) : (
             <div>
               {filteredBoards.map((board, key) => (
-                <div key={key} className={key > 0 ? "mt-4" : ""}>
+                <div key={board.id} className={key > 0 ? "mt-4" : ""}>
                   <Link href={`/boards/${board.id}`}>
                     <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
                       <CardHeader className="pb-3">
@@ -407,9 +433,8 @@ export default function DashboardPage() {
                   </Link>
                 </div>
               ))}
-
-              <Card className="mt-4 border-2 border-dashed border-gray-300 hover:border-blue-600 transition-colors cursor-pointer group">
-                <CardContent className="p-4 sm:p-6 flex flex-col items-center  justify-center h-full min-h-50">
+              <Card className="h-full border-2 border-dashed border-gray-300 hover:border-blue-600 transition-colors cursor-pointer group flex flex-col">
+                <CardContent className="flex-1 p-4 sm:p-6 flex flex-col items-center justify-center min-h-35">
                   <PlusIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
                   <p className="text-sm sm:text-base text-gray-600 group-hover:text-blue-600 font-medium">
                     Create new board
@@ -524,6 +549,48 @@ export default function DashboardPage() {
                 Apply Filters
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upgrade Dialog */}
+      <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <DialogContent className="w-[95vw] sm:max-w-106.25 mx-auto p-6 rounded-xl border border-slate-100 shadow-2xl">
+          <DialogHeader className="flex flex-col items-center text-center space-y-3">
+            <div className="p-3 bg-violet-100 text-violet-600 rounded-full w-fit">
+              <Sparkles className="w-6 h-6" />{" "}
+            </div>
+
+            <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight">
+              Upgrade to Create More Boards
+            </DialogTitle>
+
+            <DialogDescription className="text-sm text-slate-500 max-w-70">
+              Free users can only create{" "}
+              <span className="font-semibold text-slate-700">three boards</span>
+              . Upgrade to{" "}
+              <span className="text-violet-600 font-bold">Pro</span> to create{" "}
+              <span className="font-semibold text-slate-700">
+                unlimited boards
+              </span>
+              .
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">
+            <Button
+              variant="ghost"
+              onClick={() => setShowUpgradeDialog(false)}
+              className="w-full sm:w-auto text-slate-500 hover:text-slate-800"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => router.push("/pricing")}
+              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-800 text-white font-medium shadow-md transition-all"
+            >
+              View Plans
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

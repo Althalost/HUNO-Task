@@ -33,13 +33,13 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useState, useMemo } from "react";
 import {
   DndContext,
   DragStartEvent,
   DragOverEvent,
   DragEndEvent,
-  rectIntersection,
+  closestCorners,
   useDroppable,
   DragOverlay,
   useSensors,
@@ -71,12 +71,11 @@ function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`w-full lg:shrink-0 lg:w-80 ${isOver ? "bg-slate-100 rounded-lg" : ""}`}
+      className={`w-full lg:shrink-0 lg:w-70 ${isOver ? "bg-slate-100 rounded-lg" : ""}`}
     >
       <div
         className={`bg-white rounded-lg shadow-sm border ${isOver ? "ring-2 ring-slate-300" : ""}`}
       >
-        {/* Column Header */}
         <div className="p-3 sm:p-4 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 min-w-0">
@@ -98,10 +97,8 @@ function DroppableColumn({
           </div>
         </div>
 
-        {/* Column Content */}
         <div className="p-2">
           {children}
-          {/* Add Task Dialog at Column */}
           <div className="mt-2">
             <Dialog>
               <DialogTrigger asChild>
@@ -203,7 +200,7 @@ function SortableTask({ task }: { task: Task }) {
   const styles = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.7 : 1,
+    opacity: isDragging ? 0.2 : 1,
   };
 
   function getPriorityColor(priority: "low" | "medium" | "high"): string {
@@ -220,44 +217,54 @@ function SortableTask({ task }: { task: Task }) {
   }
 
   return (
-    <div ref={setNodeRef} style={styles} {...listeners} {...attributes}>
-      <Card className="cursor-pointer hover:shadow-md transition-shadow">
-        <CardContent className="p-3 sm:p-4">
-          <div className="space-y-2 sm:space-y-3">
-            {/* Task Header */}
-            <div className="flex items-start justify-between">
-              <h4 className="font-medium text-slate-900 text-sm leading-tight flex-1 min-w-0 pr-2">
-                {task.title}
-              </h4>
-            </div>
-            {/* Task description */}
-            <p className="text-xs text-slate-700 line-clamp-2">
-              {task.description || "No description."}
-            </p>
+    <div
+      ref={setNodeRef}
+      style={styles}
+      {...listeners}
+      {...attributes}
+      className="outline-none my-1 first:mt-0 last:mb-0"
+    >
+      {/* Replaced Card with a plain, low-radius, flat shadow HTML div */}
+      <div className="cursor-grab active:cursor-grabbing border border-slate-200 bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] hover:bg-slate-50/90 transition-colors duration-100 overflow-hidden">
+        {/* Trello-like slim label bar on top */}
+        <div className={`h-1 w-full ${getPriorityColor(task.priority)}`} />
 
-            {/* Task Meta */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
+        {/* Replaced CardContent with a tight-padded container block */}
+        <div className="p-2">
+          <div className="flex flex-col gap-0.5">
+            {/* Task Title */}
+            <h4 className="font-normal text-slate-900 text-[13.5px] leading-4.25 wrap-break-word tracking-normal">
+              {task.title}
+            </h4>
+
+            {/* Task Description */}
+            {task.description && (
+              <p className="text-[11.5px] text-slate-500 line-clamp-2 leading-tight mt-0.5">
+                {task.description}
+              </p>
+            )}
+
+            {/* Task Meta Footer */}
+            {(task.assignee || task.due_date) && (
+              <div className="flex items-center gap-1.5 mt-1 pt-0.5">
                 {task.assignee && (
-                  <div className="flex items-center space-x-1 text-xs text-slate-500">
-                    <UserIcon className="h-4 w-4" />
+                  <div className="flex items-center gap-1 text-[10.5px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-[3px] min-w-0 max-w-27.5">
+                    <UserIcon className="h-3 w-3 shrink-0 text-slate-500" />
                     <span className="truncate">{task.assignee}</span>
                   </div>
                 )}
+
                 {task.due_date && (
-                  <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
-                    <Calendar className="h-4 w-4" />
+                  <div className="flex items-center gap-1 text-[10.5px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-[3px] min-w-0">
+                    <Calendar className="h-3 w-3 shrink-0 text-slate-500" />
                     <span className="truncate">{task.due_date}</span>
                   </div>
                 )}
               </div>
-              <div
-                className={`w-2 h-2 rounded-full shrink-0 ${getPriorityColor(task.priority)}`}
-              />
-            </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
@@ -277,43 +284,43 @@ function TaskOverlay({ task }: { task: Task }) {
   }
 
   return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow">
-      <CardContent className="p-3 sm:p-4">
-        <div className="space-y-2 sm:space-y-3">
-          {/* Task Header */}
-          <div className="flex items-start justify-between">
-            <h4 className="font-medium text-slate-900 text-sm leading-tight flex-1 min-w-0 pr-2">
-              {task.title}
-            </h4>
-          </div>
-          {/* Task description */}
-          <p className="text-xs text-slate-700 line-clamp-2">
-            {task.description || "No description."}
-          </p>
+    <div className="border border-slate-300 bg-white rounded-[3px] shadow-xl rotate-1 scale-[1.01] overflow-hidden">
+      <div className={`h-[4px] w-full ${getPriorityColor(task.priority)}`} />
 
-          {/* Task Meta */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
+      <div className="p-2">
+        <div className="flex flex-col gap-0.5">
+          {/* Task Header */}
+          <h4 className="font-normal text-slate-900 text-[13.5px] leading-4.25 wrap-break-word">
+            {task.title}
+          </h4>
+
+          {/* Task Description */}
+          {task.description && (
+            <p className="text-[11.5px] text-slate-500 line-clamp-2 leading-tight mt-0.5">
+              {task.description}
+            </p>
+          )}
+
+          {/* Task Meta Footer */}
+          {(task.assignee || task.due_date) && (
+            <div className="flex items-center gap-1.5 mt-1 pt-0.5">
               {task.assignee && (
-                <div className="flex items-center space-x-1 text-xs text-slate-500">
-                  <UserIcon className="h-4 w-4" />
+                <div className="flex items-center gap-1 text-[10.5px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-[3px] min-w-0">
+                  <UserIcon className="h-3 w-3 text-slate-500" />
                   <span className="truncate">{task.assignee}</span>
                 </div>
               )}
               {task.due_date && (
-                <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
-                  <Calendar className="h-4 w-4" />
+                <div className="flex items-center gap-1 text-[10.5px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-[3px] min-w-0">
+                  <Calendar className="h-3 w-3 text-slate-500" />
                   <span className="truncate">{task.due_date}</span>
                 </div>
               )}
             </div>
-            <div
-              className={`w-2 h-2 rounded-full shrink-0 ${getPriorityColor(task.priority)}`}
-            />
-          </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -449,20 +456,55 @@ export default function BoardPage() {
 
     if (activeId === overId) return;
 
-    const sourceColumn = columns.find((col) =>
-      col.tasks.some((t) => t.id === activeId),
-    );
-    const targetColumn = columns.some((col) => col.id === overId)
-      ? columns.find((col) => col.id === overId)
-      : columns.find((col) => col.tasks.some((t) => t.id === overId));
+    setColumns((prev) => {
+      const sourceColumn = prev.find((col) =>
+        col.tasks.some((t) => t.id === activeId),
+      );
 
-    if (!sourceColumn || !targetColumn) return;
+      const targetColumn =
+        prev.find((col) => col.id === overId) ||
+        prev.find((col) => col.tasks.some((t) => t.id === overId));
 
-    if (sourceColumn.id !== targetColumn.id) {
-      setColumns((prev) => {
-        return prev;
-      });
-    }
+      if (!sourceColumn || !targetColumn) return prev;
+
+      if (sourceColumn.id === targetColumn.id) return prev;
+
+      const sourceColIndex = prev.findIndex((c) => c.id === sourceColumn.id);
+      const targetColIndex = prev.findIndex((c) => c.id === targetColumn.id);
+
+      const currentSourceCol = prev[sourceColIndex];
+      const currentTargetCol = prev[targetColIndex];
+
+      const draggedTask = currentSourceCol.tasks.find((t) => t.id === activeId);
+      if (!draggedTask) return prev;
+
+      if (currentTargetCol.tasks.some((t) => t.id === activeId)) return prev;
+
+      const newSourceTasks = currentSourceCol.tasks.filter(
+        (t) => t.id !== activeId,
+      );
+
+      const isOverATask = currentTargetCol.tasks.some((t) => t.id === overId);
+      let newIndex = currentTargetCol.tasks.length;
+      if (isOverATask) {
+        newIndex = currentTargetCol.tasks.findIndex((t) => t.id === overId);
+      }
+
+      const newTargetTasks = [...currentTargetCol.tasks];
+      newTargetTasks.splice(newIndex, 0, draggedTask);
+
+      const newColumns = [...prev];
+      newColumns[sourceColIndex] = {
+        ...currentSourceCol,
+        tasks: newSourceTasks,
+      };
+      newColumns[targetColIndex] = {
+        ...currentTargetCol,
+        tasks: newTargetTasks,
+      };
+
+      return newColumns;
+    });
   }
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -537,30 +579,36 @@ export default function BoardPage() {
     setEditingColumnTitle(column.title);
   }
 
-  const filteredColumns = columns.map((column) => ({
-    ...column,
-    tasks: column.tasks.filter((task) => {
-      //Filter by priority
-      if (
-        filters.priority.length > 0 &&
-        !filters.priority.includes(task.priority)
-      ) {
-        return false;
-      }
-
-      //Filter by dueDate
-      if (filters.dueDate && task.due_date) {
-        const taskDate = new Date(task.due_date).toDateString();
-        const filterDate = new Date(filters.dueDate).toDateString();
-
-        if (taskDate !== filterDate) {
+  const filteredColumns = useMemo(() => {
+    return columns.map((column) => {
+      const filteredTasks = column.tasks.filter((task) => {
+        // Filter by priority
+        if (
+          filters.priority.length > 0 &&
+          !filters.priority.includes(task.priority)
+        ) {
           return false;
         }
-      }
 
-      return true;
-    }),
-  }));
+        // Filter by dueDate
+        if (filters.dueDate && task.due_date) {
+          const taskDate = new Date(task.due_date).toDateString();
+          const filterDate = new Date(filters.dueDate).toDateString();
+
+          if (taskDate !== filterDate) return false;
+        }
+
+        return true;
+      });
+
+      return {
+        ...column,
+        tasks: filteredTasks,
+        taskIds: filteredTasks.map((task) => task.id),
+      };
+    });
+  }, [columns, filters]);
+
   return (
     <>
       <div className="min-h-screen bg-gray-50">
@@ -740,7 +788,7 @@ export default function BoardPage() {
             </div>
 
             {/* Add Task Dialog in Header*/}
-            <Dialog>
+            {/* <Dialog>
               <DialogTrigger asChild>
                 <Button className="w-full sm:w-auto">
                   <PlusIcon />
@@ -809,54 +857,60 @@ export default function BoardPage() {
                   </div>
                 </form>
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
           </div>
 
           {/* Board Columns */}
           <DndContext
             sensors={sensors}
-            collisionDetection={rectIntersection}
+            collisionDetection={closestCorners}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
             <div
-              className="flex flex-col lg:flex-row lg:space-x-6 lg:overflow-x-auto
-            lg:pb-5 lg:px-2 lg:mx-3 lg:[&::-webkit-scrollbar]:h-2
-            lg:[&::-webkit-scrollbar-track]:bg-slate-100
-            lg:[&::-webkit-scrollbar-thumb]:bg-slate-300 lg:[&::-webkit-scrollbar-track]:rounded-full
-            space-y-4 lg:space-y-0"
+              className="flex flex-col lg:flex-row lg:items-start lg:space-x-6 lg:overflow-x-auto
+    lg:pb-5 lg:px-6 lg:[&::-webkit-scrollbar]:h-2
+    lg:[&::-webkit-scrollbar-track]:bg-slate-100
+    lg:[&::-webkit-scrollbar-thumb]:bg-slate-300 lg:[&::-webkit-scrollbar-track]:rounded-full
+    space-y-4 lg:space-y-0"
             >
-              {filteredColumns.map((column, key) => (
+              {filteredColumns.map((column) => (
                 <DroppableColumn
-                  key={key}
+                  key={column.id}
                   column={column}
                   onCreateTask={handleCreateTask}
                   onEditColumn={handleEditColumn}
                 >
                   <SortableContext
-                    items={column.tasks.map((task) => task.id)}
+                    items={column.taskIds}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-3">
-                      {column.tasks.map((task, key) => (
-                        <SortableTask task={task} key={key} />
+                      {column.tasks.map((task) => (
+                        <SortableTask task={task} key={task.id} />
                       ))}
                     </div>
                   </SortableContext>
                 </DroppableColumn>
               ))}
 
-              <div className="w-full lg:shrink-0 lg:w-80">
-                <Button
-                  variant="outline"
-                  className="w-full h-full min-h-50 border-dashed boder-2 text-slate-500 hvoer:text-slate-700 border-slate-300"
+              {/* 🌟 COLUMNA FANTASMA: Reducida a lg:w-72 para igualar el ancho compacto estilo Trello */}
+              <div className="w-full lg:w-70 lg:shrink-0 h-32 rounded-2xl border-2 border-dashed border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-100/50 transition-all flex items-center justify-center cursor-pointer group">
+                <button
+                  className="flex items-center gap-2 text-slate-500 group-hover:text-slate-700 font-medium text-sm"
                   onClick={() => setIsCreatingColumn(true)}
                 >
-                  <Plus />
-                  Add another Column
-                </Button>
+                  <Plus className="w-5 h-5" />
+                  Add another column
+                </button>
               </div>
+
+              {/* 🌟 ESPACIADOR FANTASMA EXTRA: Asegura un margen de respiro limpio a la derecha al hacer scroll */}
+              <div
+                className="hidden lg:block lg:w-6 lg:h-full lg:shrink-0"
+                aria-hidden="true"
+              />
 
               <DragOverlay>
                 {activeTask ? <TaskOverlay task={activeTask} /> : null}

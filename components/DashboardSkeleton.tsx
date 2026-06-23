@@ -31,7 +31,6 @@ export default function DashboardSkeleton() {
         {/* Boards Section Header & Controls */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
-            {/* Títulos izquierdos */}
             <div className="space-y-2">
               <div className="h-6 sm:h-7 bg-slate-300 rounded w-28 sm:w-36" />
               <div className="h-4 bg-slate-200 rounded w-48 sm:w-56" />
