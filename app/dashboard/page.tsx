@@ -3,6 +3,7 @@
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
+import BoardCard from "@/components/BoardCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,6 +45,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { CreateBoardPlaceholder } from "@/components/CreateBoardPlaceholder";
 
 export default function DashboardPage() {
   const { user } = useUser();
@@ -186,7 +188,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             label="Total Boards"
@@ -297,94 +298,27 @@ export default function DashboardPage() {
             <div>No boards yet</div>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-              {filteredBoards.map((board, key) => (
-                <Link href={`/boards/${board.id}`} key={board.id}>
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <div className={`w-4 h-4 ${board.color} rounded `} />
-                        {isNewBoard(board.created_at) && (
-                          <Badge className="text-xs" variant="secondary">
-                            New
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-4 sm:p-6">
-                      <CardTitle className="text-base sm:text-lg mb-2 group-hover:text-blue-600 transition-colors">
-                        {board.title}
-                      </CardTitle>
-                      <CardDescription className="text-sm mb-4">
-                        {board.description}
-                      </CardDescription>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-300 space-y-1 sm:space-y-0">
-                        <span>
-                          Created{" "}
-                          {new Date(board.created_at).toLocaleDateString()}
-                        </span>
-                        <span>
-                          Updated{" "}
-                          {new Date(board.updated_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+              {filteredBoards.map((board) => (
+                <BoardCard
+                  key={board.id}
+                  board={board}
+                  isNew={isNewBoard(board.created_at)}
+                />
               ))}
-
-              <Card className="h-full border-2 border-dashed border-gray-300 hover:border-blue-600 transition-colors cursor-pointer group flex flex-col">
-                <CardContent className="flex-1 p-4 sm:p-6 flex flex-col items-center justify-center min-h-35">
-                  <PlusIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
-                  <p className="text-sm sm:text-base text-gray-600 group-hover:text-blue-600 font-medium">
-                    Create new board
-                  </p>
-                </CardContent>
-              </Card>
+              <CreateBoardPlaceholder onClick={handleCreateBoard} />
             </div>
           ) : (
             <div>
-              {filteredBoards.map((board, key) => (
-                <div key={board.id} className={key > 0 ? "mt-4" : ""}>
-                  <Link href={`/boards/${board.id}`}>
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <div className={`w-4 h-4 ${board.color} rounded `} />
-                          <Badge className="text-xs" variant="secondary">
-                            New
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-4 sm:p-6">
-                        <CardTitle className="text-base sm:text-lg mb-2 group-hover:text-blue-600 transition-colors">
-                          {board.title}
-                        </CardTitle>
-                        <CardDescription className="text-sm mb-4">
-                          {board.description}
-                        </CardDescription>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-300 space-y-1 sm:space-y-0">
-                          <span>
-                            Created{" "}
-                            {new Date(board.created_at).toLocaleDateString()}
-                          </span>
-                          <span>
-                            Updated{" "}
-                            {new Date(board.updated_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+              {filteredBoards.map((board, index) => (
+                <div key={board.id} className={index > 0 ? "mt-4" : ""}>
+                  <BoardCard
+                    board={board}
+                    isNew={isNewBoard(board.created_at)}
+                    variant="list"
+                  />
                 </div>
               ))}
-              <Card className="h-full border-2 border-dashed border-gray-300 hover:border-blue-600 transition-colors cursor-pointer group flex flex-col">
-                <CardContent className="flex-1 p-4 sm:p-6 flex flex-col items-center justify-center min-h-35">
-                  <PlusIcon className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
-                  <p className="text-sm sm:text-base text-gray-600 group-hover:text-blue-600 font-medium">
-                    Create new board
-                  </p>
-                </CardContent>
-              </Card>
+              <CreateBoardPlaceholder onClick={handleCreateBoard} />
             </div>
           )}
         </div>
