@@ -95,24 +95,6 @@ export default function BoardPage() {
     } catch (error) {}
   }
 
-  async function createTask(
-    columnId: string,
-    taskData: {
-      title: string;
-      description?: string;
-      assignee?: string;
-      dueDate?: string;
-      priority: "low" | "medium" | "high";
-    },
-  ) {
-    const targetColumn = columns.find((col) => col.id === columnId);
-    if (!targetColumn) {
-      throw new Error("No column available to add task");
-    }
-
-    await createRealTask(targetColumn.id, taskData);
-  }
-
   async function handleCreateTask(
     e: SyntheticEvent<HTMLFormElement>,
     columnId: string,
@@ -129,7 +111,7 @@ export default function BoardPage() {
     };
 
     if (taskData.title.trim()) {
-      await createTask(columnId, taskData);
+      await createRealTask(columnId, taskData);
       setOpenTaskDialogId(null);
     }
   }
