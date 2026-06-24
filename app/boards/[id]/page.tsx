@@ -60,7 +60,10 @@ function DroppableColumn({
 }: {
   column: ColumnWithTasks;
   children: React.ReactNode;
-  onCreateTask: (taskData: any) => Promise<void>;
+  onCreateTask: (
+    e: React.SyntheticEvent<HTMLFormElement>,
+    columnId: string,
+  ) => Promise<void>;
   onEditColumn: (column: ColumnWithTasks) => void;
   openDialogId: string | null;
   onOpenDialogChange: (id: string | null) => void;
