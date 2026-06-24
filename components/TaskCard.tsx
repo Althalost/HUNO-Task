@@ -1,6 +1,10 @@
 import { Task } from "@/lib/supabase/models";
 import { Calendar, UserIcon } from "lucide-react";
 
+interface TaskCardProps {
+  task: Task;
+}
+
 function getPriorityColor(priority: "low" | "medium" | "high"): string {
   switch (priority) {
     case "high":
@@ -12,7 +16,7 @@ function getPriorityColor(priority: "low" | "medium" | "high"): string {
   }
 }
 
-export default function TaskCard({ task }: { task: Task }) {
+export default function TaskCard({ task }: TaskCardProps) {
   return (
     <div className="cursor-grab active:cursor-grabbing border border-slate-200 bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] hover:bg-slate-50/90 transition-colors duration-100 overflow-hidden">
       <div className={`h-1 w-full ${getPriorityColor(task.priority)}`} />
