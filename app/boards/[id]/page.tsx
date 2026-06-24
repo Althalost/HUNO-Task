@@ -19,52 +19,14 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import EditBoardDialog from "@/components/EditBoardDialog";
 import TaskFiltersDialog from "@/components/TaskFiltersDialog";
 import ColumnDialog from "@/components/ColumnDialog";
-import TaskCard from "@/components/TaskCard";
 import DroppableColumn from "@/components/DroppableColumn";
-
-function SortableTask({ task }: { task: Task }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
-
-  const styles = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.2 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={styles}
-      {...listeners}
-      {...attributes}
-      className="outline-none my-1 first:mt-0 last:mb-0"
-    >
-      <TaskCard task={task} />
-    </div>
-  );
-}
-
-function TaskOverlay({ task }: { task: Task }) {
-  return (
-    <div className="border border-slate-300 bg-white rounded-[3px] shadow-xl rotate-1 scale-[1.01] overflow-hidden">
-      <TaskCard task={task} />
-    </div>
-  );
-}
+import SortableTask from "@/components/SortableTask";
+import TaskOverlay from "@/components/TaskOverLay";
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
