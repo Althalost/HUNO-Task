@@ -27,6 +27,7 @@ import ColumnDialog from "@/components/ColumnDialog";
 import DroppableColumn from "@/components/DroppableColumn";
 import SortableTask from "@/components/SortableTask";
 import TaskOverlay from "@/components/TaskOverLay";
+import BoardSkeleton from "@/components/BoardSkeleton";
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +40,7 @@ export default function BoardPage() {
     moveTask,
     createColumn,
     updateColumn,
+    loading,
   } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -209,8 +211,6 @@ export default function BoardPage() {
 
     if (!targetColumn) return;
 
-    const newOrder = targetColumn.tasks.findIndex((t) => t.id === taskId);
-
     await moveTask(taskId, targetColumn.id, currentColumns);
   }
 
@@ -316,65 +316,69 @@ export default function BoardPage() {
             </div>
           </div>
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCorners}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-          >
-            <div
-              className="flex flex-col lg:flex-row lg:items-start lg:space-x-6 lg:overflow-x-auto
+          {loading ? (
+            <BoardSkeleton />
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            >
+              <div
+                className="flex flex-col lg:flex-row lg:items-start lg:space-x-6 lg:overflow-x-auto
     lg:pb-5 lg:px-6 lg:[&::-webkit-scrollbar]:h-2
     lg:[&::-webkit-scrollbar-track]:bg-slate-100
     lg:[&::-webkit-scrollbar-thumb]:bg-slate-300 lg:[&::-webkit-scrollbar-track]:rounded-full
     space-y-4 lg:space-y-0"
-            >
-              {filteredColumns.map((column) => (
-                <DroppableColumn
-                  key={column.id}
-                  column={column}
-                  onCreateTask={handleCreateTask}
-                  onEditColumn={handleEditColumn}
-                  openDialogId={openTaskDialogId}
-                  onOpenDialogChange={setOpenTaskDialogId}
-                >
-                  <SortableContext
-                    items={column.taskIds}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-3">
-                      {column.tasks.map((task) => (
-                        <SortableTask task={task} key={task.id} />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DroppableColumn>
-              ))}
-
-              <div className="w-full lg:w-70 lg:shrink-0 h-32 rounded-2xl border-2 border-dashed border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-100/50 transition-all flex items-center justify-center cursor-pointer group">
-                <button
-                  className="flex items-center gap-2 text-slate-500 group-hover:text-slate-700 font-medium text-sm"
-                  onClick={() => setIsCreatingColumn(true)}
-                >
-                  <Plus className="w-5 h-5" />
-                  Add another column
-                </button>
-              </div>
-
-              <div
-                className="hidden lg:block lg:w-6 lg:h-full lg:shrink-0"
-                aria-hidden="true"
-              />
-
-              <DragOverlay
-                dropAnimation={null}
-                style={{ pointerEvents: "none" }}
               >
-                {activeTask ? <TaskOverlay task={activeTask} /> : null}
-              </DragOverlay>
-            </div>
-          </DndContext>
+                {filteredColumns.map((column) => (
+                  <DroppableColumn
+                    key={column.id}
+                    column={column}
+                    onCreateTask={handleCreateTask}
+                    onEditColumn={handleEditColumn}
+                    openDialogId={openTaskDialogId}
+                    onOpenDialogChange={setOpenTaskDialogId}
+                  >
+                    <SortableContext
+                      items={column.taskIds}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-3">
+                        {column.tasks.map((task) => (
+                          <SortableTask task={task} key={task.id} />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DroppableColumn>
+                ))}
+
+                <div className="w-full lg:w-70 lg:shrink-0 h-32 rounded-2xl border-2 border-dashed border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-100/50 transition-all flex items-center justify-center cursor-pointer group">
+                  <button
+                    className="flex items-center gap-2 text-slate-500 group-hover:text-slate-700 font-medium text-sm"
+                    onClick={() => setIsCreatingColumn(true)}
+                  >
+                    <Plus className="w-5 h-5" />
+                    Add another column
+                  </button>
+                </div>
+
+                <div
+                  className="hidden lg:block lg:w-6 lg:h-full lg:shrink-0"
+                  aria-hidden="true"
+                />
+
+                <DragOverlay
+                  dropAnimation={null}
+                  style={{ pointerEvents: "none" }}
+                >
+                  {activeTask ? <TaskOverlay task={activeTask} /> : null}
+                </DragOverlay>
+              </div>
+            </DndContext>
+          )}
         </main>
       </div>
 
