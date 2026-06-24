@@ -1,29 +1,9 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useBoard } from "@/lib/hooks/useBoards";
 import { ColumnWithTasks, Task } from "@/lib/supabase/models";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import { Label } from "@radix-ui/react-label";
-import { MoreHorizontal, Plus, PlusIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { SyntheticEvent, useState, useMemo } from "react";
 import {
@@ -32,7 +12,6 @@ import {
   DragOverEvent,
   DragEndEvent,
   closestCorners,
-  useDroppable,
   DragOverlay,
   useSensors,
   useSensor,
@@ -48,74 +27,7 @@ import EditBoardDialog from "@/components/EditBoardDialog";
 import TaskFiltersDialog from "@/components/TaskFiltersDialog";
 import ColumnDialog from "@/components/ColumnDialog";
 import TaskCard from "@/components/TaskCard";
-import CreateTaskDialog from "@/components/CreateTaskDialog";
-
-function DroppableColumn({
-  column,
-  children,
-  onCreateTask,
-  onEditColumn,
-  openDialogId,
-  onOpenDialogChange,
-}: {
-  column: ColumnWithTasks;
-  children: React.ReactNode;
-  onCreateTask: (
-    e: React.SyntheticEvent<HTMLFormElement>,
-    columnId: string,
-  ) => Promise<void>;
-  onEditColumn: (column: ColumnWithTasks) => void;
-  openDialogId: string | null;
-  onOpenDialogChange: (id: string | null) => void;
-}) {
-  const { setNodeRef, isOver } = useDroppable({ id: column.id }) as unknown as {
-    setNodeRef: (element: HTMLElement | null) => void;
-    isOver: boolean;
-  };
-  return (
-    <div
-      ref={setNodeRef}
-      className={`w-full lg:shrink-0 lg:w-70 ${isOver ? "bg-slate-100 rounded-lg" : ""}`}
-    >
-      <div
-        className={`bg-white rounded-lg shadow-sm border ${isOver ? "ring-2 ring-slate-300" : ""}`}
-      >
-        <div className="p-3 sm:p-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 min-w-0">
-              <h3 className="font-semibold text-slate-800 text-sm sm:text-base">
-                {column.title}
-              </h3>
-              <Badge variant="secondary" className="text-xs shrink-0">
-                {column.tasks.length}
-              </Badge>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="shrink-0"
-              onClick={() => onEditColumn(column)}
-            >
-              <MoreHorizontal />
-            </Button>
-          </div>
-        </div>
-
-        <div className="p-2">
-          {children}
-          <div className="mt-2">
-            <CreateTaskDialog
-              open={openDialogId === column.id}
-              onOpenChange={onOpenDialogChange}
-              columnId={column.id}
-              onCreateTask={onCreateTask}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import DroppableColumn from "@/components/DroppableColumn";
 
 function SortableTask({ task }: { task: Task }) {
   const {
@@ -125,14 +37,7 @@ function SortableTask({ task }: { task: Task }) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id }) as unknown as {
-    attributes: any;
-    listeners: any;
-    setNodeRef: (element: HTMLElement | null) => void;
-    transform: any;
-    transition: any;
-    isDragging: boolean;
-  };
+  } = useSortable({ id: task.id });
 
   const styles = {
     transform: CSS.Transform.toString(transform),
@@ -196,6 +101,7 @@ export default function BoardPage() {
   });
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const pendingColumnsRef = React.useRef<typeof columns | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -275,6 +181,7 @@ export default function BoardPage() {
     if (task) {
       setActiveTask(task);
     }
+    pendingColumnsRef.current = null;
   }
 
   function handleDragOver(event: DragOverEvent) {
@@ -333,50 +240,34 @@ export default function BoardPage() {
         tasks: newTargetTasks,
       };
 
+      pendingColumnsRef.current = newColumns;
       return newColumns;
     });
   }
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    if (!over) return;
+
+    setActiveTask(null);
+
+    if (!over) {
+      pendingColumnsRef.current = null;
+      return;
+    }
 
     const taskId = active.id as string;
-    const overId = over.id as string;
+    const currentColumns = pendingColumnsRef.current ?? columns;
+    pendingColumnsRef.current = null;
 
-    const targetColumn = columns.find((col) => col.id === overId);
-    if (targetColumn) {
-      const sourceColumn = columns.find((col) =>
-        col.tasks.some((task) => task.id === taskId),
-      );
+    const targetColumn = currentColumns.find((col) =>
+      col.tasks.some((t) => t.id === taskId),
+    );
 
-      if (sourceColumn && sourceColumn.id !== targetColumn.id) {
-        await moveTask(taskId, targetColumn.id, targetColumn.tasks.length);
-      }
-    } else {
-      const sourceColumn = columns.find((col) =>
-        col.tasks.some((task) => task.id === taskId),
-      );
+    if (!targetColumn) return;
 
-      const targetColumn = columns.find((col) =>
-        col.tasks.some((task) => task.id === overId),
-      );
+    const newOrder = targetColumn.tasks.findIndex((t) => t.id === taskId);
 
-      if (sourceColumn && targetColumn) {
-        const oldIndex = sourceColumn.tasks.findIndex(
-          (task) => task.id === taskId,
-        );
-
-        const newIndex = targetColumn.tasks.findIndex(
-          (task) => task.id === overId,
-        );
-
-        if (oldIndex !== newIndex) {
-          await moveTask(taskId, targetColumn.id, newIndex);
-        }
-      }
-    }
-    setActiveTask(null);
+    await moveTask(taskId, targetColumn.id, newOrder, currentColumns);
   }
 
   async function handleCreateColumn(e: React.SyntheticEvent) {
@@ -532,7 +423,10 @@ export default function BoardPage() {
                 aria-hidden="true"
               />
 
-              <DragOverlay>
+              <DragOverlay
+                dropAnimation={null}
+                style={{ pointerEvents: "none" }}
+              >
                 {activeTask ? <TaskOverlay task={activeTask} /> : null}
               </DragOverlay>
             </div>

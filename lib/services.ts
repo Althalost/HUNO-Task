@@ -1,4 +1,10 @@
-import { Board, boardsWithTasksCount, Column, Task } from "./supabase/models";
+import {
+  Board,
+  boardsWithTasksCount,
+  Column,
+  ColumnWithTasks,
+  Task,
+} from "./supabase/models";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const boardService = {
@@ -72,7 +78,11 @@ export const columnService = {
 
     if (error) throw error;
 
-    return data || [];
+    return (data || []).map((col) => ({
+      ...col,
+      id: String(col.id),
+      board_id: String(col.board_id),
+    }));
   },
 
   async createColumn(
@@ -126,7 +136,11 @@ export const taskService = {
 
     if (error) throw error;
 
-    return data || [];
+    return (data || []).map((task) => ({
+      ...task,
+      id: String(task.id),
+      column_id: String(task.column_id),
+    }));
   },
 
   async createTask(
@@ -149,17 +163,28 @@ export const taskService = {
     taskId: string,
     newColumnId: string,
     newOrder: number,
+    allColumns: ColumnWithTasks[],
   ) {
-    const { data, error } = await supabase
-      .from("tasks")
-      .update({
-        column_id: newColumnId,
-        sort_order: newOrder,
-      })
-      .eq("id", taskId);
+    const affectedColumns = allColumns.filter(
+      (col) => col.tasks.some((t) => t.id === taskId) || col.id === newColumnId,
+    );
 
-    if (error) throw error;
-    return data;
+    const updates = affectedColumns.flatMap((col) =>
+      col.tasks.map((task, index) => ({
+        id: Number(task.id),
+        column_id: Number(col.id),
+        sort_order: index,
+      })),
+    );
+
+    const results = await Promise.all(
+      updates.map(({ id, column_id, sort_order }) =>
+        supabase.from("tasks").update({ column_id, sort_order }).eq("id", id),
+      ),
+    );
+
+    const failed = results.filter((r) => r.error);
+    if (failed.length > 0) throw failed[0].error;
   },
 };
 

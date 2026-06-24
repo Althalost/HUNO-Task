@@ -16,7 +16,6 @@ import {
 } from "../supabase/models";
 import { useEffect, useState } from "react";
 import { useSupabase } from "../supabase/SupabaseProvider";
-import { Description } from "@radix-ui/react-dialog";
 
 export function useBoards() {
   const { user } = useUser();
@@ -171,36 +170,28 @@ export function useBoard(boardId: string) {
     taskId: string,
     newColumnId: string,
     newOrder: number,
+    optimisticColumns?: ColumnWithTasks[],
   ) {
     const previousColumns = JSON.parse(JSON.stringify(columns));
 
+    if (optimisticColumns) {
+      setColumns(optimisticColumns);
+    }
+
     try {
-      await taskService.moveTask(supabase!, taskId, newColumnId, newOrder);
-      setColumns((prev) => {
-        const newColumn = [...prev];
+      const targetCol = (optimisticColumns ?? columns).find(
+        (col) => col.id === newColumnId,
+      );
 
-        let taskToMove: Task | null = null;
-        for (const col of newColumn) {
-          const taskIndex = col.tasks.findIndex((task) => task.id === taskId);
-          if (taskIndex !== -1) {
-            taskToMove = col.tasks[taskIndex];
-            col.tasks.splice(taskIndex, 1);
-            break;
-          }
-        }
-
-        if (taskToMove) {
-          const targetColumn = newColumn.find((col) => col.id === newColumnId);
-          if (targetColumn) {
-            targetColumn.tasks.splice(newOrder, 0, taskToMove);
-          }
-        }
-
-        return newColumn;
-      });
+      await taskService.moveTask(
+        supabase!,
+        taskId,
+        newColumnId,
+        newOrder,
+        optimisticColumns ?? columns,
+      );
     } catch (err) {
       setColumns(previousColumns);
-
       setError(err instanceof Error ? err.message : "Failed to move task.");
     }
   }
