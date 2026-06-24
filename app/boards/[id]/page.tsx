@@ -52,6 +52,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import EditBoardDialog from "@/components/EditBoardDialog";
+import TaskFiltersDialog from "@/components/TaskFiltersDialog";
 
 function DroppableColumn({
   column,
@@ -637,67 +638,12 @@ export default function BoardPage() {
           onColorChange={setNewColor}
         />
 
-        <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-          <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
-            <DialogHeader className="flex flex-cols justify-between pb-4">
-              <DialogTitle className="text-xl font-bold text-slate-800">
-                Filter Tasks
-              </DialogTitle>
-              <p className="text-sm text-gray-600">
-                Filter tasks by priority, assignee, or due date.
-              </p>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Priority</Label>
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {["low", "medium", "high"].map((priority, key) => (
-                    <Button
-                      onClick={() => {
-                        const newPriorities = filters.priority.includes(
-                          priority,
-                        )
-                          ? filters.priority.filter((p) => p !== priority)
-                          : [...filters.priority, priority];
-
-                        handleFilterChange("priority", newPriorities);
-                      }}
-                      key={key}
-                      variant={
-                        filters.priority.includes(priority)
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                    >
-                      {priority.charAt(0).toUpperCase() + priority.slice(1)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Due Date</Label>
-                <Input
-                  type="date"
-                  value={filters.dueDate || ""}
-                  onChange={(e) =>
-                    handleFilterChange("dueDate", e.target.value || null)
-                  }
-                />
-              </div>
-
-              <div className="flex justify-between pt-4">
-                <Button type="button" variant="outline" onClick={clearFilters}>
-                  Clear Filters
-                </Button>
-                <Button type="button" onClick={() => setIsFilterOpen(false)}>
-                  Apply Filters
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <TaskFiltersDialog
+          open={isFilterOpen}
+          onOpenChange={setIsFilterOpen}
+          onApply={setFilters}
+          onClear={clearFilters}
+        />
 
         <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
