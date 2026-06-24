@@ -53,6 +53,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import EditBoardDialog from "@/components/EditBoardDialog";
 import TaskFiltersDialog from "@/components/TaskFiltersDialog";
+import ColumnDialog from "@/components/ColumnDialog";
 
 function DroppableColumn({
   column,
@@ -583,7 +584,6 @@ export default function BoardPage() {
   const filteredColumns = useMemo(() => {
     return columns.map((column) => {
       const filteredTasks = column.tasks.filter((task) => {
-        // Filter by priority
         if (
           filters.priority.length > 0 &&
           !filters.priority.includes(task.priority)
@@ -591,7 +591,6 @@ export default function BoardPage() {
           return false;
         }
 
-        // Filter by dueDate
         if (filters.dueDate && task.due_date) {
           const taskDate = new Date(task.due_date).toDateString();
           const filterDate = new Date(filters.dueDate).toDateString();
@@ -691,7 +690,6 @@ export default function BoardPage() {
                 </DroppableColumn>
               ))}
 
-              {/* 🌟 COLUMNA FANTASMA: Reducida a lg:w-72 para igualar el ancho compacto estilo Trello */}
               <div className="w-full lg:w-70 lg:shrink-0 h-32 rounded-2xl border-2 border-dashed border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-100/50 transition-all flex items-center justify-center cursor-pointer group">
                 <button
                   className="flex items-center gap-2 text-slate-500 group-hover:text-slate-700 font-medium text-sm"
@@ -702,7 +700,6 @@ export default function BoardPage() {
                 </button>
               </div>
 
-              {/* 🌟 ESPACIADOR FANTASMA EXTRA: Asegura un margen de respiro limpio a la derecha al hacer scroll */}
               <div
                 className="hidden lg:block lg:w-6 lg:h-full lg:shrink-0"
                 aria-hidden="true"
@@ -716,78 +713,29 @@ export default function BoardPage() {
         </main>
       </div>
 
-      <Dialog open={isCreatingColumn} onOpenChange={setIsCreatingColumn}>
-        <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
-          <DialogHeader className="flex flex-cols justify-between pb-4">
-            <DialogTitle className="text-xl font-bold text-slate-800">
-              Create New Column
-            </DialogTitle>
-            <p className="text-sm text-gray-600">
-              Add new column to organize your tasks.
-            </p>
-          </DialogHeader>
-          <form className="space-y-4" onSubmit={handleCreateColumn}>
-            <div className="space-y-2">
-              <Label>Column Title</Label>
-              <Input
-                id="columnTitle"
-                value={newColumnTitle}
-                onChange={(e) => setNewColumnTitle(e.target.value)}
-                placeholder="Enter column title..."
-              />
-            </div>
-            <div className="space-x-2 flex justify-end">
-              <Button
-                type="button"
-                onClick={() => setIsCreatingColumn(false)}
-                variant="outline"
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Create Column</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <ColumnDialog
+        mode="create"
+        open={isCreatingColumn}
+        onOpenChange={setIsCreatingColumn}
+        onSubmit={handleCreateColumn}
+        value={newColumnTitle}
+        onChange={setNewColumnTitle}
+      />
 
-      <Dialog open={isEditingColumn} onOpenChange={setIsEditingColumn}>
-        <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
-          <DialogHeader className="flex flex-cols justify-between pb-4">
-            <DialogTitle className="text-xl font-bold text-slate-800">
-              Edit Column
-            </DialogTitle>
-            <p className="text-sm text-gray-600">
-              Edit the title of your column.
-            </p>
-          </DialogHeader>
-          <form className="space-y-4" onSubmit={handleUpdateColumn}>
-            <div className="space-y-2">
-              <Label>Column Title</Label>
-              <Input
-                id="columnTitle"
-                value={editingColumnTitle}
-                onChange={(e) => setEditingColumnTitle(e.target.value)}
-                placeholder="Enter column title..."
-                required
-              />
-            </div>
-            <div className="space-x-2 flex justify-end">
-              <Button
-                type="button"
-                onClick={() => {
-                  setIsEditingColumn(false);
-                  setEditingColumnTitle("");
-                  setEditingColumn(null);
-                }}
-                variant="outline"
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Save changes</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <ColumnDialog
+        mode="edit"
+        open={isEditingColumn}
+        onOpenChange={(open) => {
+          setIsEditingColumn(open);
+          if (!open) {
+            setEditingColumnTitle("");
+            setEditingColumn(null);
+          }
+        }}
+        onSubmit={handleUpdateColumn}
+        value={editingColumnTitle}
+        onChange={setEditingColumnTitle}
+      />
     </>
   );
 }
