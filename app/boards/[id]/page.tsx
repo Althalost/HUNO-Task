@@ -273,7 +273,7 @@ export default function BoardPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar
           boardTitle={board?.title}
           onEditBoard={() => {
@@ -306,7 +306,7 @@ export default function BoardPage() {
           onClear={clearFilters}
         />
 
-        <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+        <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
               <div className="text-sm text-slate-700">
@@ -328,10 +328,10 @@ export default function BoardPage() {
             >
               <div
                 className="flex flex-col lg:flex-row lg:items-start lg:space-x-6 lg:overflow-x-auto
-    lg:pb-5 lg:px-6 lg:[&::-webkit-scrollbar]:h-2
-    lg:[&::-webkit-scrollbar-track]:bg-slate-100
-    lg:[&::-webkit-scrollbar-thumb]:bg-slate-300 lg:[&::-webkit-scrollbar-track]:rounded-full
-    space-y-4 lg:space-y-0"
+  lg:pb-5 lg:px-6 lg:[&::-webkit-scrollbar]:h-2
+  lg:[&::-webkit-scrollbar-track]:bg-slate-100
+  lg:[&::-webkit-scrollbar-thumb]:bg-slate-300 lg:[&::-webkit-scrollbar-track]:rounded-full
+  space-y-4 lg:space-y-0 flex-1"
               >
                 {filteredColumns.map((column) => (
                   <DroppableColumn
