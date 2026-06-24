@@ -1,4 +1,4 @@
-import { MoreHorizontal } from "lucide-react";
+import { ClipboardList, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import CreateTaskDialog from "./CreateTaskDialog";
@@ -56,6 +56,12 @@ export default function DroppableColumn({
         </div>
 
         <div className="p-2">
+          {column.tasks.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <ClipboardList className="w-6 h-6 text-slate-300" />
+              <p className="text-xs text-slate-400">No tasks yet</p>
+            </div>
+          )}
           {children}
           <div className="mt-2">
             <CreateTaskDialog
