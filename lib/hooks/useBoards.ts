@@ -169,7 +169,6 @@ export function useBoard(boardId: string) {
   async function moveTask(
     taskId: string,
     newColumnId: string,
-    newOrder: number,
     optimisticColumns?: ColumnWithTasks[],
   ) {
     const previousColumns = JSON.parse(JSON.stringify(columns));
@@ -179,15 +178,10 @@ export function useBoard(boardId: string) {
     }
 
     try {
-      const targetCol = (optimisticColumns ?? columns).find(
-        (col) => col.id === newColumnId,
-      );
-
       await taskService.moveTask(
         supabase!,
         taskId,
         newColumnId,
-        newOrder,
         optimisticColumns ?? columns,
       );
     } catch (err) {

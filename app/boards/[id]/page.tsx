@@ -267,7 +267,7 @@ export default function BoardPage() {
 
     const newOrder = targetColumn.tasks.findIndex((t) => t.id === taskId);
 
-    await moveTask(taskId, targetColumn.id, newOrder, currentColumns);
+    await moveTask(taskId, targetColumn.id, currentColumns);
   }
 
   async function handleCreateColumn(e: React.SyntheticEvent) {

@@ -162,24 +162,21 @@ export const taskService = {
     supabase: SupabaseClient,
     taskId: string,
     newColumnId: string,
-    newOrder: number,
     allColumns: ColumnWithTasks[],
   ) {
     const affectedColumns = allColumns.filter(
       (col) => col.tasks.some((t) => t.id === taskId) || col.id === newColumnId,
     );
 
-    const updates = affectedColumns.flatMap((col) =>
-      col.tasks.map((task, index) => ({
-        id: Number(task.id),
-        column_id: Number(col.id),
-        sort_order: index,
-      })),
-    );
-
     const results = await Promise.all(
-      updates.map(({ id, column_id, sort_order }) =>
-        supabase.from("tasks").update({ column_id, sort_order }).eq("id", id),
+      affectedColumns.map((col) =>
+        supabase.rpc("update_tasks_order", {
+          p_tasks: col.tasks.map((task, index) => ({
+            id: Number(task.id),
+            column_id: Number(col.id),
+            sort_order: index,
+          })),
+        }),
       ),
     );
 
