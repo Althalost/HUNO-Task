@@ -25,7 +25,6 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Label } from "@radix-ui/react-label";
 import {
   Calendar,
-  Check,
   MoreHorizontal,
   Plus,
   PlusIcon,
@@ -291,7 +290,7 @@ function TaskOverlay({ task }: { task: Task }) {
 
   return (
     <div className="border border-slate-300 bg-white rounded-[3px] shadow-xl rotate-1 scale-[1.01] overflow-hidden">
-      <div className={`h-[4px] w-full ${getPriorityColor(task.priority)}`} />
+      <div className={`h-1 w-full ${getPriorityColor(task.priority)}`} />
 
       <div className="p-2">
         <div className="flex flex-col gap-0.5">
@@ -373,16 +372,6 @@ export default function BoardPage() {
       },
     }),
   );
-
-  function handleFilterChange(
-    type: "priority" | "assignee" | "dueDate",
-    value: string | string[] | null,
-  ) {
-    setFilters((prev) => ({
-      ...prev,
-      [type]: value,
-    }));
-  }
 
   function clearFilters() {
     setFilters({
