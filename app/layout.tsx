@@ -9,6 +9,7 @@ import {
 } from "@clerk/nextjs";
 import "./globals.css";
 import SupabaseProvider from "@/lib/supabase/SupabaseProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,18 @@ export default function RootLayout({
       >
         <body className={`${geistSans.className} min-h-full flex flex-col`}>
           <SupabaseProvider>{children}</SupabaseProvider>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              classNames: {
+                toast:
+                  "bg-white border border-slate-200 shadow-md text-slate-800",
+                error: "border-red-200 bg-red-50 text-red-800",
+                success: "border-green-200 bg-green-50 text-green-800",
+                description: "text-slate-500",
+              },
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>

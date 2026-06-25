@@ -9,13 +9,12 @@ import {
 } from "../services";
 import {
   Board,
-  Column,
   ColumnWithTasks,
   boardsWithTasksCount,
-  Task,
 } from "../supabase/models";
 import { useEffect, useState } from "react";
 import { useSupabase } from "../supabase/SupabaseProvider";
+import { toast } from "sonner";
 
 export function useBoards() {
   const { user } = useUser();
@@ -43,7 +42,10 @@ export function useBoards() {
       );
       setBoards(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load boards.");
+      const message =
+        err instanceof Error ? err.message : "Failed to load the boards.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -70,7 +72,10 @@ export function useBoards() {
       };
       setBoards((prev) => [newBoardWithTasks, ...prev]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create board.");
+      const message =
+        err instanceof Error ? err.message : "Failed to create board.";
+      setError(message);
+      toast.error(message);
     }
   }
 
@@ -104,7 +109,10 @@ export function useBoard(boardId: string) {
       setBoard(data.board);
       setColumns(data.columnsWithTasks);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load boards.");
+      const message =
+        err instanceof Error ? err.message : "Failed to load boards.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -120,9 +128,10 @@ export function useBoard(boardId: string) {
       setBoard(updatedBoard);
       return updatedBoard;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update the board.",
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to update the board.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -160,9 +169,10 @@ export function useBoard(boardId: string) {
 
       return newTask;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create the task.",
-      );
+      const message =
+        err instanceof Error ? err.message : "Failed to create task.";
+      setError(message);
+      toast.error(message);
     }
   }
 
@@ -185,8 +195,10 @@ export function useBoard(boardId: string) {
         optimisticColumns ?? columns,
       );
     } catch (err) {
-      setColumns(previousColumns);
-      setError(err instanceof Error ? err.message : "Failed to move task.");
+      const message =
+        err instanceof Error ? err.message : "Failed to move task.";
+      setError(message);
+      toast.error(message);
     }
   }
 
@@ -204,7 +216,10 @@ export function useBoard(boardId: string) {
       setColumns((prev) => [...prev, { ...newColumn, tasks: [] }]);
       return newColumn;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to Create Column.");
+      const message =
+        err instanceof Error ? err.message : "Failed to create column.";
+      setError(message);
+      toast.error(message);
     }
   }
 
@@ -224,7 +239,10 @@ export function useBoard(boardId: string) {
 
       return updatedColumn;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to Create Column.");
+      const message =
+        err instanceof Error ? err.message : "Failed to update Column.";
+      setError(message);
+      toast.error(message);
     }
   }
 
