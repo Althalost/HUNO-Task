@@ -53,6 +53,7 @@ export default function BoardPage() {
   const [isCreatingColumn, setIsCreatingColumn] = useState(false);
 
   const [newColumnTitle, setNewColumnTitle] = useState("");
+  const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
 
   const [openTaskDialogId, setOpenTaskDialogId] = useState<string | null>(null);
 
@@ -334,8 +335,11 @@ export default function BoardPage() {
                     column={column}
                     onCreateTask={handleCreateTask}
                     onEditColumn={handleEditColumn}
+                    editingColumnId={editingColumnId}
+                    onEditingChange={setEditingColumnId}
                     openDialogId={openTaskDialogId}
                     onOpenDialogChange={setOpenTaskDialogId}
+                    onDeleteColumn={deleteColumn}
                   >
                     <SortableContext
                       items={column.taskIds}

@@ -1,10 +1,26 @@
-import { ClipboardList, MoreHorizontal } from "lucide-react";
+import { ClipboardList, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import CreateTaskDialog from "./CreateTaskDialog";
 import { useDroppable } from "@dnd-kit/core";
 import { ColumnWithTasks } from "@/lib/supabase/models";
 import { useState, useRef, useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 interface DroppableColumnProps {
   column: ColumnWithTasks;
@@ -14,8 +30,11 @@ interface DroppableColumnProps {
     columnId: string,
   ) => Promise<void>;
   onEditColumn: (column: ColumnWithTasks) => void;
+  editingColumnId: string | null;
+  onEditingChange: (columnId: string | null) => void;
   openDialogId: string | null;
   onOpenDialogChange: (id: string | null) => void;
+  onDeleteColumn: (columnId: string) => Promise<void>;
 }
 
 export default function DroppableColumn({
@@ -23,16 +42,30 @@ export default function DroppableColumn({
   children,
   onCreateTask,
   onEditColumn,
+  editingColumnId,
+  onEditingChange,
   openDialogId,
   onOpenDialogChange,
+  onDeleteColumn,
 }: DroppableColumnProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [editValue, setEditValue] = useState(column.title);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isEditing = editingColumnId === column.id;
+
+  useEffect(() => {
+    if (!isEditing) setEditValue(column.title);
+  }, [column.title, isEditing]);
+
   useEffect(() => {
     if (isEditing) {
-      inputRef.current?.focus();
-      inputRef.current?.select();
+      const frame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          inputRef.current?.focus();
+          inputRef.current?.select();
+        });
+      });
+      return () => cancelAnimationFrame(frame);
     }
   }, [isEditing]);
 
@@ -43,12 +76,13 @@ export default function DroppableColumn({
     } else {
       setEditValue(column.title);
     }
-    setIsEditing(false);
+    onEditingChange(null);
   }
 
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
     <div
+      data-column
       ref={(node) => setNodeRef(node)}
       className={`w-full lg:shrink-0 lg:w-70 ${isOver ? "bg-slate-100 rounded-lg" : ""}`}
     >
@@ -56,40 +90,57 @@ export default function DroppableColumn({
         className={`bg-white rounded-lg shadow-sm border ${isOver ? "ring-2 ring-slate-300" : ""}`}
       >
         <div className="p-3 sm:p-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               {isEditing ? (
                 <input
                   ref={inputRef}
+                  spellCheck={false}
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={handleRenameSubmit}
+                  onBlur={() => handleRenameSubmit()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleRenameSubmit();
                     if (e.key === "Escape") {
                       setEditValue(column.title);
-                      setIsEditing(false);
+                      onEditingChange(null);
                     }
                   }}
-                  className="font-semibold text-slate-800 text-sm sm:text-base bg-transparent border-b border-slate-400 outline-none w-full"
+                  className="font-semibold text-slate-800 text-sm sm:text-base bg-transparent outline-none rounded px-1 ring-1 ring-blue-300 min-w-0 w-full"
                 />
               ) : (
                 <h3 className="font-semibold text-slate-800 text-sm sm:text-base">
                   {column.title}
                 </h3>
               )}
-              <Badge variant="secondary" className="text-xs shrink-0">
-                {column.tasks.length}
-              </Badge>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="shrink-0"
-              onClick={() => setIsEditing(true)}
-            >
-              <MoreHorizontal />
-            </Button>
+            <Badge variant="secondary" className="text-xs shrink-0">
+              {column.tasks.length}
+            </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 data-[state=open]:border data-[state=open]:border-slate-200 data-[state=open]:bg-slate-50"
+                >
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                onCloseAutoFocus={(e) => e.preventDefault()}
+              >
+                <DropdownMenuItem onClick={() => onEditingChange(column.id)}>
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowDeleteAlert(true)}>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -111,6 +162,25 @@ export default function DroppableColumn({
           </div>
         </div>
       </div>
+      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete "{column.title}"</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the column and all its tasks.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDeleteColumn(column.id)}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
