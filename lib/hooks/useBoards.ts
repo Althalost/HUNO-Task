@@ -202,6 +202,24 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function deleteTask(taskId: string, columnId: string) {
+    try {
+      await columnService.deleteColumn(supabase!, taskId);
+      setColumns((prev) =>
+        prev.map((col) =>
+          col.id === columnId
+            ? { ...col, tasks: col.tasks.filter((task) => task.id !== taskId) }
+            : col,
+        ),
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete Task.";
+      setError(message);
+      toast.error(message);
+    }
+  }
+
   async function createColumn(title: string) {
     if (!board || !user) throw new Error("Board not loaded");
 
@@ -246,6 +264,19 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function deleteColumn(columnId: string) {
+    try {
+      await columnService.deleteColumn(supabase!, columnId);
+
+      setColumns((prev) => prev.filter((col) => col.id !== columnId));
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete Column.";
+      setError(message);
+      toast.error(message);
+    }
+  }
+
   return {
     board,
     columns,
@@ -257,5 +288,7 @@ export function useBoard(boardId: string) {
     moveTask,
     createColumn,
     updateColumn,
+    deleteTask,
+    deleteColumn,
   };
 }

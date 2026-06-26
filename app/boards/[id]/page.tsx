@@ -40,6 +40,8 @@ export default function BoardPage() {
     moveTask,
     createColumn,
     updateColumn,
+    deleteTask,
+    deleteColumn,
     loading,
   } = useBoard(id);
 
@@ -49,13 +51,9 @@ export default function BoardPage() {
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCreatingColumn, setIsCreatingColumn] = useState(false);
-  const [isEditingColumn, setIsEditingColumn] = useState(false);
 
   const [newColumnTitle, setNewColumnTitle] = useState("");
-  const [editingColumnTitle, setEditingColumnTitle] = useState("");
-  const [editingColumn, setEditingColumn] = useState<ColumnWithTasks | null>(
-    null,
-  );
+
   const [openTaskDialogId, setOpenTaskDialogId] = useState<string | null>(null);
 
   const [filters, setFilters] = useState({
@@ -225,22 +223,19 @@ export default function BoardPage() {
     setIsCreatingColumn(false);
   }
 
-  async function handleUpdateColumn(e: React.SyntheticEvent) {
-    e.preventDefault();
+  async function handleEditColumn(column: ColumnWithTasks) {
+    const previousColumns = columns;
 
-    if (!editingColumnTitle.trim() || !editingColumn) return;
-
-    await updateColumn(editingColumn?.id, editingColumnTitle.trim());
-
-    setEditingColumnTitle("");
-    setIsEditingColumn(false);
-    setEditingColumn(null);
-  }
-
-  function handleEditColumn(column: ColumnWithTasks) {
-    setIsEditingColumn(true);
-    setEditingColumn(column);
-    setEditingColumnTitle(column.title);
+    setColumns((prev) =>
+      prev.map((col) =>
+        col.id === column.id ? { ...col, title: column.title } : col,
+      ),
+    );
+    try {
+      await updateColumn(column.id, column.title);
+    } catch (error) {
+      setColumns(previousColumns);
+    }
   }
 
   const filteredColumns = useMemo(() => {
@@ -383,27 +378,11 @@ export default function BoardPage() {
       </div>
 
       <ColumnDialog
-        mode="create"
         open={isCreatingColumn}
         onOpenChange={setIsCreatingColumn}
         onSubmit={handleCreateColumn}
         value={newColumnTitle}
         onChange={setNewColumnTitle}
-      />
-
-      <ColumnDialog
-        mode="edit"
-        open={isEditingColumn}
-        onOpenChange={(open) => {
-          setIsEditingColumn(open);
-          if (!open) {
-            setEditingColumnTitle("");
-            setEditingColumn(null);
-          }
-        }}
-        onSubmit={handleUpdateColumn}
-        value={editingColumnTitle}
-        onChange={setEditingColumnTitle}
       />
     </>
   );

@@ -116,6 +116,17 @@ export const columnService = {
 
     return data;
   },
+
+  async deleteColumn(
+    supabase: SupabaseClient,
+    columnId: string,
+  ): Promise<void> {
+    const { error } = await supabase
+      .from("columns")
+      .delete()
+      .eq("id", Number(columnId));
+    if (error) throw error;
+  },
 };
 
 export const taskService = {
@@ -182,6 +193,15 @@ export const taskService = {
 
     const failed = results.filter((r) => r.error);
     if (failed.length > 0) throw failed[0].error;
+  },
+
+  async deleteTask(supabase: SupabaseClient, taskId: string): Promise<void> {
+    const { error } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("id", Number(taskId));
+
+    if (error) throw error;
   },
 };
 

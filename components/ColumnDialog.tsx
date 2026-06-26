@@ -10,7 +10,6 @@ import { Input } from "./ui/input";
 import React from "react";
 
 interface ColumnDialogProps {
-  mode: "create" | "edit";
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (e: React.SyntheticEvent) => void;
@@ -19,26 +18,22 @@ interface ColumnDialogProps {
 }
 
 export default function ColumnDialog({
-  mode,
   open,
   onOpenChange,
   onSubmit,
   value,
   onChange,
 }: ColumnDialogProps) {
-  const isCreate = mode === "create";
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
           <DialogHeader className="flex flex-cols justify-between pb-4">
             <DialogTitle className="text-xl font-bold text-slate-800">
-              {isCreate ? "Create New Column" : "Edit Column"}
+              "Create New Column"
             </DialogTitle>
             <p className="text-sm text-gray-600">
-              {isCreate
-                ? "Add new column to organize your tasks."
-                : "Edit the title of your column."}
+              Add new column to organize your tasks
             </p>
           </DialogHeader>
           <form className="space-y-4" onSubmit={onSubmit}>
@@ -59,9 +54,7 @@ export default function ColumnDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit">
-                {isCreate ? "Create Column" : "Save Changes"}
-              </Button>
+              <Button type="submit">Create Column</Button>
             </div>
           </form>
         </DialogContent>
