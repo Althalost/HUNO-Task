@@ -175,10 +175,7 @@ export const taskService = {
     newColumnId: string,
     allColumns: ColumnWithTasks[],
   ) {
-    const affectedColumns = allColumns.filter(
-      (col) => col.tasks.some((t) => t.id === taskId) || col.id === newColumnId,
-    );
-
+    const affectedColumns = allColumns;
     const results = await Promise.all(
       affectedColumns.map((col) =>
         supabase.rpc("update_tasks_order", {

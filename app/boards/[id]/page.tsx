@@ -5,17 +5,20 @@ import { useBoard } from "@/lib/hooks/useBoards";
 import { ColumnWithTasks, Task } from "@/lib/supabase/models";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { SyntheticEvent, useState, useMemo } from "react";
+import React, { SyntheticEvent, useState, useMemo, useEffect } from "react";
 import {
   DndContext,
   DragStartEvent,
   DragOverEvent,
   DragEndEvent,
   closestCorners,
+  pointerWithin,
   DragOverlay,
   useSensors,
   useSensor,
   PointerSensor,
+  MouseSensor,
+  TouchSensor,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -67,13 +70,23 @@ export default function BoardPage() {
   const pendingColumnsRef = React.useRef<typeof columns | null>(null);
 
   const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 50,
+        tolerance: 10,
+      },
+    }),
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
       },
     }),
   );
-
   function clearFilters() {
     setFilters({
       priority: [] as string[],
@@ -129,9 +142,87 @@ export default function BoardPage() {
     pendingColumnsRef.current = null;
   }
 
+  // function handleDragOver(event: DragOverEvent) {
+  //   const { active, over } = event;
+  //   if (!over) return;
+
+  //   const activeId = active.id as string;
+  //   const overId = over.id as string;
+
+  //   if (activeId === overId) return;
+
+  //   setColumns((prev) => {
+  //     const sourceColumn = prev.find((col) =>
+  //       col.tasks.some((t) => t.id === activeId),
+  //     );
+
+  //     const targetColumn =
+  //       prev.find((col) => col.id === overId) ||
+  //       prev.find((col) => col.tasks.some((t) => t.id === overId));
+
+  //     if (!sourceColumn || !targetColumn) return prev;
+
+  //     if (sourceColumn.id === targetColumn.id) return prev;
+
+  //     const sourceColIndex = prev.findIndex((c) => c.id === sourceColumn.id);
+  //     const targetColIndex = prev.findIndex((c) => c.id === targetColumn.id);
+
+  //     const currentSourceCol = prev[sourceColIndex];
+  //     const currentTargetCol = prev[targetColIndex];
+
+  //     const draggedTask = currentSourceCol.tasks.find((t) => t.id === activeId);
+  //     if (!draggedTask) return prev;
+
+  //     if (currentTargetCol.tasks.some((t) => t.id === activeId)) return prev;
+
+  //     const newSourceTasks = currentSourceCol.tasks.filter(
+  //       (t) => t.id !== activeId,
+  //     );
+
+  //     const isOverATask = currentTargetCol.tasks.some((t) => t.id === overId);
+  //     let newIndex = currentTargetCol.tasks.length;
+  //     if (isOverATask) {
+  //       const overTaskIndex = currentTargetCol.tasks.findIndex(
+  //         (t) => t.id === overId,
+  //       );
+  //       const overRect = over.rect;
+  //       const activeRect = active.rect.current.translated;
+  //       const isBelowOverItem =
+  //         activeRect &&
+  //         activeRect.top + activeRect.height / 2 >
+  //           overRect.top + overRect.height / 2;
+  //       newIndex = isBelowOverItem ? overTaskIndex + 1 : overTaskIndex;
+  //     }
+
+  //     const newTargetTasks = [...currentTargetCol.tasks];
+  //     newTargetTasks.splice(newIndex, 0, draggedTask);
+
+  //     const newColumns = [...prev];
+  //     newColumns[sourceColIndex] = {
+  //       ...currentSourceCol,
+  //       tasks: newSourceTasks,
+  //     };
+  //     newColumns[targetColIndex] = {
+  //       ...currentTargetCol,
+  //       tasks: newTargetTasks,
+  //     };
+
+  //     pendingColumnsRef.current = newColumns;
+  //     return newColumns;
+  //   });
+  // }
+
+  // 1. Estrategia personalizada para evitar saltos fantasma entre columnas
+  const customCollisionDetection = React.useCallback((args: any) => {
+    const pointerCollisions = pointerWithin(args);
+    if (pointerCollisions.length > 0) return pointerCollisions;
+
+    return closestCorners(args);
+  }, []);
+
   function handleDragOver(event: DragOverEvent) {
     const { active, over } = event;
-    if (!over) return;
+    if (!over || active.id === over.id) return;
 
     const activeId = active.id as string;
     const overId = over.id as string;
@@ -149,7 +240,28 @@ export default function BoardPage() {
 
       if (!sourceColumn || !targetColumn) return prev;
 
-      if (sourceColumn.id === targetColumn.id) return prev;
+      if (sourceColumn.id === targetColumn.id) {
+        const colIndex = prev.findIndex((c) => c.id === sourceColumn.id);
+        const currentCol = prev[colIndex];
+
+        const oldIndex = currentCol.tasks.findIndex((t) => t.id === activeId);
+        const newIndex = currentCol.tasks.findIndex((t) => t.id === overId);
+
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+          const newTasks = [...currentCol.tasks];
+          const [movedTask] = newTasks.splice(oldIndex, 1);
+          newTasks.splice(newIndex, 0, movedTask);
+
+          const newColumns = [...prev];
+          newColumns[colIndex] = {
+            ...currentCol,
+            tasks: newTasks,
+          };
+          pendingColumnsRef.current = newColumns;
+          return newColumns;
+        }
+        return prev;
+      }
 
       const sourceColIndex = prev.findIndex((c) => c.id === sourceColumn.id);
       const targetColIndex = prev.findIndex((c) => c.id === targetColumn.id);
@@ -160,14 +272,13 @@ export default function BoardPage() {
       const draggedTask = currentSourceCol.tasks.find((t) => t.id === activeId);
       if (!draggedTask) return prev;
 
-      if (currentTargetCol.tasks.some((t) => t.id === activeId)) return prev;
-
       const newSourceTasks = currentSourceCol.tasks.filter(
         (t) => t.id !== activeId,
       );
 
       const isOverATask = currentTargetCol.tasks.some((t) => t.id === overId);
       let newIndex = currentTargetCol.tasks.length;
+
       if (isOverATask) {
         newIndex = currentTargetCol.tasks.findIndex((t) => t.id === overId);
       }
@@ -305,7 +416,7 @@ export default function BoardPage() {
         <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <div className="text-sm text-slate-700">
+              <div className="text-sm text-slate-700" translate="no">
                 <span className="font-medium">Total Task: </span>
                 {columns.reduce((sum, col) => sum + col.tasks.length, 0)}
               </div>
@@ -317,7 +428,7 @@ export default function BoardPage() {
           ) : (
             <DndContext
               sensors={sensors}
-              collisionDetection={closestCorners}
+              collisionDetection={customCollisionDetection}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
@@ -336,16 +447,16 @@ export default function BoardPage() {
                     onCreateTask={handleCreateTask}
                     onEditColumn={handleEditColumn}
                     editingColumnId={editingColumnId}
-                    onEditingChange={setEditingColumnId}
+                    onEditingChange={(id) => setEditingColumnId(id)}
                     openDialogId={openTaskDialogId}
-                    onOpenDialogChange={setOpenTaskDialogId}
+                    onOpenDialogChange={(id) => setOpenTaskDialogId(id)}
                     onDeleteColumn={deleteColumn}
                   >
                     <SortableContext
                       items={column.taskIds}
                       strategy={verticalListSortingStrategy}
                     >
-                      <div className="space-y-3">
+                      <div className="space-y-3 touch-none">
                         {column.tasks.map((task) => (
                           <SortableTask task={task} key={task.id} />
                         ))}

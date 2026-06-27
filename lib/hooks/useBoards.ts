@@ -204,7 +204,7 @@ export function useBoard(boardId: string) {
 
   async function deleteTask(taskId: string, columnId: string) {
     try {
-      await columnService.deleteColumn(supabase!, taskId);
+      await taskService.deleteTask(supabase!, taskId);
       setColumns((prev) =>
         prev.map((col) =>
           col.id === columnId

@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import CreateTaskDialog from "./CreateTaskDialog";
 import { useDroppable } from "@dnd-kit/core";
 import { ColumnWithTasks } from "@/lib/supabase/models";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,26 +50,36 @@ export default function DroppableColumn({
 }: DroppableColumnProps) {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [editValue, setEditValue] = useState(column.title);
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isEditing = editingColumnId === column.id;
+
+  const { setNodeRef, isOver } = useDroppable({
+    id: column.id,
+    data: {
+      columnId: column.id,
+    },
+  });
 
   useEffect(() => {
     if (!isEditing) setEditValue(column.title);
   }, [column.title, isEditing]);
 
   useEffect(() => {
-    if (isEditing) {
-      const frame = requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          inputRef.current?.focus();
-          inputRef.current?.select();
-        });
-      });
-      return () => cancelAnimationFrame(frame);
-    }
+    if (!isEditing) return;
+
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.select();
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [isEditing]);
 
-  function handleRenameSubmit() {
+  const handleRenameSubmit = useCallback(() => {
     const trimmed = editValue.trim();
     if (trimmed && trimmed !== column.title) {
       onEditColumn({ ...column, title: trimmed });
@@ -77,28 +87,45 @@ export default function DroppableColumn({
       setEditValue(column.title);
     }
     onEditingChange(null);
-  }
+  }, [editValue, column, onEditColumn, onEditingChange]);
 
-  const { setNodeRef, isOver } = useDroppable({ id: column.id });
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        handleRenameSubmit();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isEditing, handleRenameSubmit]);
+
   return (
     <div
       data-column
-      ref={(node) => setNodeRef(node)}
-      className={`w-full lg:shrink-0 lg:w-70 ${isOver ? "bg-slate-100 rounded-lg" : ""}`}
+      ref={setNodeRef}
+      className={`w-full lg:shrink-0 lg:w-70 transition-colors ${isOver ? "bg-slate-100 rounded-lg" : ""}`}
     >
       <div
-        className={`bg-white rounded-lg shadow-sm border ${isOver ? "ring-2 ring-slate-300" : ""}`}
+        className={`bg-white rounded-lg shadow-sm border transition-all ${isOver ? "ring-2 ring-slate-300" : ""}`}
       >
         <div className="p-3 sm:p-4 border-b">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div
+              ref={containerRef}
+              className="flex items-center gap-2 min-w-0 flex-1"
+            >
               {isEditing ? (
                 <input
                   ref={inputRef}
                   spellCheck={false}
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={() => handleRenameSubmit()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleRenameSubmit();
                     if (e.key === "Escape") {
@@ -109,14 +136,16 @@ export default function DroppableColumn({
                   className="font-semibold text-slate-800 text-sm sm:text-base bg-transparent outline-none rounded px-1 ring-1 ring-blue-300 min-w-0 w-full"
                 />
               ) : (
-                <h3 className="font-semibold text-slate-800 text-sm sm:text-base">
+                <h3 className="font-semibold text-slate-800 text-sm sm:text-base truncate">
                   {column.title}
                 </h3>
               )}
             </div>
+
             <Badge variant="secondary" className="text-xs shrink-0">
               {column.tasks.length}
             </Badge>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -124,18 +153,26 @@ export default function DroppableColumn({
                   size="sm"
                   className="shrink-0 data-[state=open]:border data-[state=open]:border-slate-200 data-[state=open]:bg-slate-50"
                 >
-                  <MoreHorizontal />
+                  <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
                 onCloseAutoFocus={(e) => e.preventDefault()}
               >
-                <DropdownMenuItem onClick={() => onEditingChange(column.id)}>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditingChange(column.id);
+                  }}
+                >
                   <Pencil className="w-4 h-4 mr-2" />
                   Rename
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowDeleteAlert(true)}>
+                <DropdownMenuItem
+                  onClick={() => setShowDeleteAlert(true)}
+                  className="text-red-600 focus:text-red-600"
+                >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
@@ -162,6 +199,7 @@ export default function DroppableColumn({
           </div>
         </div>
       </div>
+
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
