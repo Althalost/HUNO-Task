@@ -358,9 +358,14 @@ export default function BoardPage() {
         <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 flex flex-col flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
             <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              <div className="text-sm text-slate-700" translate="no">
-                <span className="font-medium">Total Task: </span>
-                {columns.reduce((sum, col) => sum + col.tasks.length, 0)}
+              <div
+                className="flex items-center gap-2 text-sm text-slate-500"
+                translate="no"
+              >
+                <span className="font-medium">Total Tasks: </span>
+                <span className="bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-full text-xs">
+                  {columns.reduce((sum, col) => sum + col.tasks.length, 0)}
+                </span>
               </div>
             </div>
           </div>
@@ -411,15 +416,13 @@ export default function BoardPage() {
                   </DroppableColumn>
                 ))}
 
-                <div className="w-full lg:w-70 lg:shrink-0 h-32 rounded-2xl border-2 border-dashed border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-100/50 transition-all flex items-center justify-center cursor-pointer group">
-                  <button
-                    className="flex items-center gap-2 text-slate-500 group-hover:text-slate-700 font-medium text-sm"
-                    onClick={() => setIsCreatingColumn(true)}
-                  >
-                    <Plus className="w-5 h-5" />
-                    Add another column
-                  </button>
-                </div>
+                <button
+                  className="lg:shrink-0 flex items-center gap-2 cursor-pointer select-none text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium px-4 whitespace-nowrap"
+                  onClick={() => setIsCreatingColumn(true)}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add column
+                </button>
 
                 <div
                   className="hidden lg:block lg:w-6 lg:h-full lg:shrink-0"

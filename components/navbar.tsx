@@ -66,22 +66,25 @@ export default function Navbar({
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <Link
                 href="/dashboard"
-                className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-gray-900 shrink-0"
+                className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
               >
-                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span className="hidden sm:inline">Back to dashboard</span>
-                <span className="inline sm:hidden">Back</span>
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline text-sm">Dashboard</span>
               </Link>
 
               <div className="h-4 sm:h-6 w-px bg-gray-300 hidden sm:block shrink-0" />
 
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-xl sm:text-2xl font-semibold text-gray-500 shrink-0">
-                  HT
+                <span className="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                  <span className="sm:hidden">HT</span>
+                  <span className="hidden sm:inline">
+                    HUNO<span className="text-indigo-600">TASK</span>
+                  </span>
                 </span>
 
                 <div className="flex items-center gap-1 min-w-0">
-                  <span className="text-lg font-bold text-gray-800 truncate">
+                  <span className="text-slate-300">·</span>
+                  <span className="text-base font-semibold text-slate-700 truncate">
                     {boardTitle}
                   </span>
 
