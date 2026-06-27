@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import { Smartphone, Flag, Users } from "lucide-react";
 import {
   LayoutDashboard,
   KanbanSquare,
@@ -30,7 +31,7 @@ export default function Home() {
       <Navbar />
 
       <header className="container mx-auto px-4 pt-16 pb-12 sm:pt-24 sm:pb-20 text-center max-w-4xl">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 mb-4 animate-bounce">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 mb-4 animate-pulse">
           🚀 HUNOTASK 1.0 • LIVE WORKSPACE
         </span>
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent leading-tight">
@@ -93,12 +94,12 @@ export default function Home() {
             Everything you need to stay on track
           </h2>
           <p className="text-slate-600 mt-3">
-            Built with modern technologies to deliver a robust, snappy, and
-            real-time experience.
+            Built with modern technologies to deliver a robust, snappy
+            experience.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
             <div className="h-12 w-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 mb-5">
               <KanbanSquare className="h-6 w-6" />
@@ -108,7 +109,7 @@ export default function Home() {
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
               Organize your tasks visually. Drag, drop, and structure your
-              pipeline effortlessly across multiple customized states.
+              pipeline effortlessly across multiple customized columns.
             </p>
           </div>
 
@@ -120,8 +121,8 @@ export default function Home() {
               Real-time Metrics
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Get an instant overview. Track total boards, active tasks, and
-              historical engagement directly from your dynamic stats panels.
+              Get an instant overview of your productivity. Track total boards,
+              active tasks, and weekly activity from your dashboard.
             </p>
           </div>
 
@@ -133,8 +134,47 @@ export default function Home() {
               Advanced Filtering
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Find what matters instantly. Deep-dive into your projects via
-              title searches, date ranges, and custom criteria.
+              Find what matters instantly. Search by title, filter by date range
+              or task count across all your boards.
+            </p>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
+            <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600 mb-5">
+              <Smartphone className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
+              Mobile Friendly
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Drag and drop works seamlessly on touch devices. Manage your tasks
+              on the go without losing any functionality.
+            </p>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
+            <div className="h-12 w-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600 mb-5">
+              <Flag className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
+              Priority System
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Mark tasks as low, medium, or high priority. Visual indicators
+              keep your team focused on what matters most.
+            </p>
+          </div>
+
+          <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
+            <div className="h-12 w-12 rounded-xl bg-cyan-100 flex items-center justify-center text-cyan-600 mb-5">
+              <Users className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
+              Task Assignment
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Assign tasks to team members and set due dates. Keep everyone
+              accountable with clear ownership and deadlines.
             </p>
           </div>
         </div>

@@ -182,13 +182,13 @@ export default function DashboardPage() {
 
       <main className="container mx-auto px-4 py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-50">
+          <h1 className="text-2xl font-bold tracking-tight select-none text-slate-900 sm:text-3xl dark:text-slate-50">
             Welcome back,{" "}
             {user?.firstName ||
               user?.emailAddresses[0]?.emailAddress.split("@")[0]}
             ! ✨
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1 select-none">
             Here's an overview of your boards and tasks for today.
           </p>
         </div>
@@ -223,12 +223,14 @@ export default function DashboardPage() {
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
             <div className="w-fit sm:w-80">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-bold select-none text-gray-900">
                 Your Boards
               </h2>
-              <p className="text-gray-600">Manage your projects and tasks</p>
+              <p className="text-gray-600 select-none">
+                Manage your projects and tasks
+              </p>
               {isFreeUser && (
-                <p className=" text-sm mt-1 text-gray-600">
+                <p className=" text-sm mt-1 text-gray-600 select-none">
                   Free plan: {boards.length}/3 boards used.
                 </p>
               )}
@@ -284,12 +286,12 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="relative mb-4 sm:mb-6">
+          <div className="relative mb-4 sm:mb-6 select-none">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               id="search"
               placeholder="Search boards..."
-              className="pl-10"
+              className="pl-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0"
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, search: e.target.value }))
               }
@@ -358,7 +360,9 @@ export default function DashboardPage() {
                   />
                 </div>
               ))}
-              <CreateBoardPlaceholder onClick={handleCreateBoard} />
+              <div className="mt-4">
+                <CreateBoardPlaceholder onClick={handleCreateBoard} />
+              </div>
             </div>
           )}
         </div>

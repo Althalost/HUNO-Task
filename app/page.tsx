@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import Navbar from "@/components/Navbar";
 import LandingPage from "@/components/LandingPage";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 
@@ -19,23 +18,13 @@ export default function Home() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="flex items-center justify-center h-[calc(100vh-64px)]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
       </div>
     );
   }
 
-  if (isSignedIn) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <DashboardSkeleton />
-      </div>
-    );
-  }
+  if (isSignedIn) return <DashboardSkeleton />;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">

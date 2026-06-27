@@ -127,6 +127,9 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
 .cl-drawerRoot,
 .cl-drawerBackdrop,
 .cl-portal,

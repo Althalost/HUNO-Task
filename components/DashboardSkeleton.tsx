@@ -1,18 +1,20 @@
-import Navbar from "./Navbar";
-
 export default function DashboardSkeleton() {
   return (
     <div className="min-h-screen bg-gray-50 animate-pulse">
-      <Navbar />
-
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
+            HUNO<span className="text-indigo-600">TASK</span>
+          </h1>
+          <div className="h-9 w-9 rounded-full bg-slate-200" />
+        </div>
+      </header>
       <main className="container mx-auto px-4 py-6 sm:py-8">
-        {/* Header: Welcome Text */}
         <div className="mb-6 sm:mb-8 space-y-2">
           <div className="h-8 bg-slate-200 rounded-lg w-64 sm:w-80 tracking-tight" />
           <div className="h-4 bg-slate-200 rounded-md w-48 sm:w-60 mt-1" />
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {[...Array(4)].map((_, i) => (
             <div
@@ -28,7 +30,6 @@ export default function DashboardSkeleton() {
           ))}
         </div>
 
-        {/* Boards Section Header & Controls */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
             <div className="space-y-2">
@@ -36,26 +37,21 @@ export default function DashboardSkeleton() {
               <div className="h-4 bg-slate-200 rounded w-48 sm:w-56" />
             </div>
 
-            {/* Buttons and filters */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 w-full">
               <div className="flex items-center gap-3">
-                {/* View Mode (Grid/List toggle) */}
                 <div className="inline-flex h-9 items-center rounded-lg bg-slate-100 p-1 w-19" />
-                {/* Filter button */}
+
                 <div className="h-10 bg-slate-200 rounded-lg w-20" />
               </div>
 
-              {/* Create Board button */}
               <div className="h-10 bg-slate-300 rounded-lg sm:w-32 w-full" />
             </div>
           </div>
 
-          {/* Search Bar */}
           <div className="relative mb-4 sm:mb-6">
             <div className="h-10 bg-slate-200 rounded-lg w-full" />
           </div>
 
-          {/* Boards Grid/List MOCK */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {[...Array(3)].map((_, i) => (
               <div

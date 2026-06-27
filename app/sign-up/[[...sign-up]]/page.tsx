@@ -4,7 +4,6 @@ import Link from "next/link";
 export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 flex">
-      {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 flex-col justify-between p-12">
         <Link href="/">
           <h1 className="text-white text-2xl font-extrabold tracking-tight hover:opacity-80 transition-opacity">
@@ -12,7 +11,7 @@ export default function SignUpPage() {
           </h1>
         </Link>
         <div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-900 text-indigo-300 mb-6">
+          <span className="inline-flex items-center select-none gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-900 text-indigo-300 mb-6">
             🚀 HUNOTASK 1.0 • LIVE WORKSPACE
           </span>
           <p className="text-white text-3xl font-extrabold leading-snug tracking-tight">

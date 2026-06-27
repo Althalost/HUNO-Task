@@ -38,7 +38,7 @@ export default function BoardCard({
 
   return (
     <Card
-      className="hover:shadow-lg transition-shadow cursor-pointer group"
+      className="hover:shadow-lg transition-shadow select-none cursor-pointer group"
       onClick={() => router.push(`/boards/${board.id}`)}
     >
       <CardHeader className="pb-3">
