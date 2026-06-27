@@ -25,13 +25,6 @@ export default function TaskCard({ task }: TaskCardProps) {
           <h4 className="font-normal text-slate-900 text-[13.5px] leading-4.25 wrap-break-word tracking-normal">
             {task.title}
           </h4>
-
-          {task.description && (
-            <p className="text-[11.5px] text-slate-500 line-clamp-2 leading-tight mt-0.5">
-              {task.description}
-            </p>
-          )}
-
           {(task.assignee || task.due_date) && (
             <div className="flex items-center gap-1.5 mt-1 pt-0.5">
               {task.assignee && (

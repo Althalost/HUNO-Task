@@ -31,6 +31,7 @@ import DroppableColumn from "@/components/DroppableColumn";
 import SortableTask from "@/components/SortableTask";
 import TaskOverlay from "@/components/TaskOverLay";
 import BoardSkeleton from "@/components/BoardSkeleton";
+import TaskDetailsDialog from "@/components/TaskDetailsDialog";
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +45,7 @@ export default function BoardPage() {
     createColumn,
     updateColumn,
     deleteTask,
+    updateTask,
     deleteColumn,
     loading,
   } = useBoard(id);
@@ -59,6 +61,7 @@ export default function BoardPage() {
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
 
   const [openTaskDialogId, setOpenTaskDialogId] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const [filters, setFilters] = useState({
     priority: [] as string[],
@@ -130,6 +133,16 @@ export default function BoardPage() {
     }
   }
 
+  async function handleUpdateTask(taskId: string, updates: Partial<Task>) {
+    await updateTask(taskId, updates);
+    setSelectedTask(null);
+  }
+
+  async function handleDeleteTask(taskId: string, columnId: string) {
+    setSelectedTask(null);
+    await deleteTask(taskId, columnId);
+  }
+
   function handleDragStart(event: DragStartEvent) {
     const taskId = event.active.id as string;
     const task = columns
@@ -142,77 +155,6 @@ export default function BoardPage() {
     pendingColumnsRef.current = null;
   }
 
-  // function handleDragOver(event: DragOverEvent) {
-  //   const { active, over } = event;
-  //   if (!over) return;
-
-  //   const activeId = active.id as string;
-  //   const overId = over.id as string;
-
-  //   if (activeId === overId) return;
-
-  //   setColumns((prev) => {
-  //     const sourceColumn = prev.find((col) =>
-  //       col.tasks.some((t) => t.id === activeId),
-  //     );
-
-  //     const targetColumn =
-  //       prev.find((col) => col.id === overId) ||
-  //       prev.find((col) => col.tasks.some((t) => t.id === overId));
-
-  //     if (!sourceColumn || !targetColumn) return prev;
-
-  //     if (sourceColumn.id === targetColumn.id) return prev;
-
-  //     const sourceColIndex = prev.findIndex((c) => c.id === sourceColumn.id);
-  //     const targetColIndex = prev.findIndex((c) => c.id === targetColumn.id);
-
-  //     const currentSourceCol = prev[sourceColIndex];
-  //     const currentTargetCol = prev[targetColIndex];
-
-  //     const draggedTask = currentSourceCol.tasks.find((t) => t.id === activeId);
-  //     if (!draggedTask) return prev;
-
-  //     if (currentTargetCol.tasks.some((t) => t.id === activeId)) return prev;
-
-  //     const newSourceTasks = currentSourceCol.tasks.filter(
-  //       (t) => t.id !== activeId,
-  //     );
-
-  //     const isOverATask = currentTargetCol.tasks.some((t) => t.id === overId);
-  //     let newIndex = currentTargetCol.tasks.length;
-  //     if (isOverATask) {
-  //       const overTaskIndex = currentTargetCol.tasks.findIndex(
-  //         (t) => t.id === overId,
-  //       );
-  //       const overRect = over.rect;
-  //       const activeRect = active.rect.current.translated;
-  //       const isBelowOverItem =
-  //         activeRect &&
-  //         activeRect.top + activeRect.height / 2 >
-  //           overRect.top + overRect.height / 2;
-  //       newIndex = isBelowOverItem ? overTaskIndex + 1 : overTaskIndex;
-  //     }
-
-  //     const newTargetTasks = [...currentTargetCol.tasks];
-  //     newTargetTasks.splice(newIndex, 0, draggedTask);
-
-  //     const newColumns = [...prev];
-  //     newColumns[sourceColIndex] = {
-  //       ...currentSourceCol,
-  //       tasks: newSourceTasks,
-  //     };
-  //     newColumns[targetColIndex] = {
-  //       ...currentTargetCol,
-  //       tasks: newTargetTasks,
-  //     };
-
-  //     pendingColumnsRef.current = newColumns;
-  //     return newColumns;
-  //   });
-  // }
-
-  // 1. Estrategia personalizada para evitar saltos fantasma entre columnas
   const customCollisionDetection = React.useCallback((args: any) => {
     const pointerCollisions = pointerWithin(args);
     if (pointerCollisions.length > 0) return pointerCollisions;
@@ -458,7 +400,11 @@ export default function BoardPage() {
                     >
                       <div className="space-y-3 touch-none">
                         {column.tasks.map((task) => (
-                          <SortableTask task={task} key={task.id} />
+                          <SortableTask
+                            task={task}
+                            key={task.id}
+                            onTaskClick={setSelectedTask}
+                          />
                         ))}
                       </div>
                     </SortableContext>
@@ -499,6 +445,15 @@ export default function BoardPage() {
         value={newColumnTitle}
         onChange={setNewColumnTitle}
       />
+      {selectedTask && (
+        <TaskDetailsDialog
+          task={selectedTask}
+          open={!!selectedTask}
+          onOpenChange={(open) => !open && setSelectedTask(null)}
+          onUpdateTask={handleUpdateTask}
+          onDeleteTask={handleDeleteTask}
+        />
+      )}
     </>
   );
 }

@@ -10,6 +10,7 @@ import {
 import {
   Board,
   ColumnWithTasks,
+  Task,
   boardsWithTasksCount,
 } from "../supabase/models";
 import { useEffect, useState } from "react";
@@ -176,6 +177,42 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function updateTask(taskId: string, editedTask: Partial<Task>) {
+    const prevColumn = columns;
+    try {
+      const updatedTask = await taskService.updateTask(
+        supabase!,
+        taskId,
+        editedTask,
+      );
+      setColumns((prev) =>
+        prev.map((col) =>
+          col.id === String(editedTask.column_id)
+            ? {
+                ...col,
+                tasks: col.tasks.map((task) =>
+                  task.id === taskId
+                    ? {
+                        ...updatedTask,
+                        id: String(updatedTask.id),
+                        column_id: String(updatedTask.column_id),
+                      }
+                    : task,
+                ),
+              }
+            : col,
+        ),
+      );
+      return updatedTask;
+    } catch (err) {
+      setColumns(prevColumn);
+      const message =
+        err instanceof Error ? err.message : "Failed to update task.";
+      setError(message);
+      toast.error(message);
+    }
+  }
+
   async function moveTask(
     taskId: string,
     newColumnId: string,
@@ -195,6 +232,7 @@ export function useBoard(boardId: string) {
         optimisticColumns ?? columns,
       );
     } catch (err) {
+      setColumns(previousColumns);
       const message =
         err instanceof Error ? err.message : "Failed to move task.";
       setError(message);
@@ -288,6 +326,7 @@ export function useBoard(boardId: string) {
     moveTask,
     createColumn,
     updateColumn,
+    updateTask,
     deleteTask,
     deleteColumn,
   };

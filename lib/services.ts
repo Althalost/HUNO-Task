@@ -169,6 +169,34 @@ export const taskService = {
     return data;
   },
 
+  async updateTask(
+    supabase: SupabaseClient,
+    taskId: string,
+    task: Partial<Task>,
+  ): Promise<Task> {
+    const { id, created_at, sort_order, ...updates } = task as any;
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({
+        ...updates,
+        column_id: updates.column_id ? Number(updates.column_id) : undefined,
+        due_date: updates.due_date || null,
+        description: updates.description || null,
+        assignee: updates.assignee || null,
+      })
+      .eq("id", Number(taskId))
+      .select()
+      .single();
+    console.log("error:", error);
+    console.log("updates que se mandan:", {
+      ...updates,
+      column_id: updates.column_id ? Number(updates.column_id) : undefined,
+    });
+    if (error) throw error;
+
+    return data;
+  },
+
   async moveTask(
     supabase: SupabaseClient,
     taskId: string,

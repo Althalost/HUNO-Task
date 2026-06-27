@@ -3,7 +3,12 @@ import { CSS } from "@dnd-kit/utilities";
 import TaskCard from "./TaskCard";
 import { Task } from "@/lib/supabase/models";
 
-export default function SortableTask({ task }: { task: Task }) {
+interface SortableTaskProps {
+  task: Task;
+  onTaskClick: (task: Task) => void;
+}
+
+export default function SortableTask({ task, onTaskClick }: SortableTaskProps) {
   const {
     attributes,
     listeners,
@@ -25,7 +30,9 @@ export default function SortableTask({ task }: { task: Task }) {
       {...attributes}
       className="outline-none my-1 first:mt-0 last:mb-0"
     >
-      <TaskCard task={task} />
+      <div onClick={() => onTaskClick(task)}>
+        <TaskCard task={task} />
+      </div>
     </div>
   );
 }

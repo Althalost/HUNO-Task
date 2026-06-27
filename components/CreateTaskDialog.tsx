@@ -86,10 +86,17 @@ export default function CreateTaskDialog({
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                {["low", "medium", "high"].map((priority) => (
-                  <SelectItem key={priority} value={priority}>
-                    {priority.charAt(0).toUpperCase() + priority.slice(1)}
+              <SelectContent position="popper">
+                {[
+                  { value: "low", color: "bg-green-500" },
+                  { value: "medium", color: "bg-yellow-500" },
+                  { value: "high", color: "bg-red-500" },
+                ].map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${p.color}`} />
+                      {p.value.charAt(0).toUpperCase() + p.value.slice(1)}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
