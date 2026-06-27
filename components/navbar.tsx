@@ -33,8 +33,8 @@ export default function Navbar({
         <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 select-none cursor-default">
-                HUNOTASK
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
+                HUNO<span className="text-indigo-600">TASK</span>
               </h1>
             </div>
             <UserButton
@@ -128,8 +128,8 @@ export default function Navbar({
     <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-            HUNOTASK
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
+            HUNO<span className="text-indigo-600">TASK</span>
           </h1>
         </div>
         {isSignedIn ? (
@@ -145,7 +145,7 @@ export default function Navbar({
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <SignInButton mode="modal">
+            <SignInButton mode="redirect">
               <Button
                 variant="ghost"
                 className="h-10 px-4 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer select-none rounded-xl"
@@ -154,8 +154,8 @@ export default function Navbar({
               </Button>
             </SignInButton>
 
-            <SignUpButton mode="modal">
-              <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-none rounded-xl">
+            <SignUpButton mode="redirect">
+              <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-pointer select-none rounded-xl">
                 Sign Up
               </Button>
             </SignUpButton>

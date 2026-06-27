@@ -29,7 +29,6 @@ export default function Home() {
     <div className="min-h-screen bg-linear-to-br from-indigo-50 select-none via-white to-purple-50 text-slate-900">
       <Navbar />
 
-      {/* --- HERO SECTION --- */}
       <header className="container mx-auto px-4 pt-16 pb-12 sm:pt-24 sm:pb-20 text-center max-w-4xl">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 mb-4 animate-bounce">
           🚀 HUNOTASK 1.0 • LIVE WORKSPACE
@@ -61,7 +60,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* --- PREVIEW MOCKUP --- */}
       <section className="container mx-auto px-4 pb-16 sm:pb-24 max-w-5xl select-none">
         <div className="relative rounded-2xl border border-slate-200/80 bg-white p-2 shadow-2xl overflow-hidden group">
           <div className="h-8 w-full bg-slate-50/80 border-b border-slate-100/80 px-4 flex items-center gap-1.5 rounded-t-xl">
@@ -86,7 +84,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- FEATURES SECTION --- */}
       <section
         id="features"
         className="container mx-auto px-4 py-16 sm:py-24 border-t border-slate-100 max-w-6xl"
@@ -102,7 +99,6 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          {/* Feature 1 */}
           <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
             <div className="h-12 w-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 mb-5">
               <KanbanSquare className="h-6 w-6" />
@@ -116,7 +112,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Feature 2 */}
           <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
             <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 mb-5">
               <Zap className="h-6 w-6" />
@@ -130,7 +125,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Feature 3 */}
           <div className="bg-white/60 backdrop-blur-xs border border-slate-100 p-6 rounded-2xl shadow-xs hover:shadow-md transition-shadow">
             <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 mb-5">
               <BarChart3 className="h-6 w-6" />
@@ -146,12 +140,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
       <footer className="border-t border-slate-100 bg-white/40 py-8 text-center text-xs text-slate-400">
-        <p>
-          © 2026 HUNOTASK. Built for professional portfolios using Next.js,
-          TailwindCSS & Supabase.
-        </p>
+        <p>© 2026 HUNOTASK.</p>
       </footer>
     </div>
   );

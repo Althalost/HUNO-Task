@@ -37,7 +37,15 @@ export default function TaskCard({ task }: TaskCardProps) {
               {task.due_date && (
                 <div className="flex items-center gap-1 text-[10.5px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded-[3px] min-w-0">
                   <Calendar className="h-3 w-3 shrink-0 text-slate-500" />
-                  <span className="truncate">{task.due_date}</span>
+                  <span className="truncate">
+                    {new Date(task.due_date + "T00:00:00").toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                      },
+                    )}
+                  </span>
                 </div>
               )}
             </div>
