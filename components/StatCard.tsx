@@ -16,7 +16,7 @@ export default function StatCard({
 }: StatCardProps) {
   return (
     <Card>
-      <CardContent className="p-4 sm:py-6">
+      <CardContent className="p-4 sm:py-6 select-none">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs sm:text-sm font-medium text-gray-600">

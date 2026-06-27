@@ -7,10 +7,9 @@ import BoardCard from "@/components/BoardCard";
 import BoardFiltersDialog from "@/components/BoardFiltersDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { usePlan } from "@/lib/contexts/PlanContext";
 import { useBoards } from "@/lib/hooks/useBoards";
-import { Board, boardsWithTasksCount } from "@/lib/supabase/models";
+import { boardsWithTasksCount } from "@/lib/supabase/models";
 import { useUser } from "@clerk/nextjs";
 import {
   Activity,
@@ -29,15 +28,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateBoardPlaceholder } from "@/components/CreateBoardPlaceholder";
 import UpgradeDialog from "@/components/UpgradeDialog";
+import EditBoardDialog from "@/components/EditBoardDialog";
 
 export default function DashboardPage() {
   const { user } = useUser();
-  const { createBoard, boards, loading, error } = useBoards();
+  const { createBoard, boards, loading, error, updateBoard, deleteBoard } =
+    useBoards();
   const router = useRouter();
   const { isFreeUser } = usePlan();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState<boolean>(false);
+  const [selectedBoard, setSelectedBoard] =
+    useState<boardsWithTasksCount | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editColor, setEditColor] = useState("");
 
   const [filters, setFilters] = useState({
     search: "",
@@ -99,6 +104,23 @@ export default function DashboardPage() {
     }
     await createBoard({ title: "New Board" });
   };
+
+  function handleEditBoard(board: boardsWithTasksCount) {
+    setSelectedBoard(board);
+    setEditTitle(board.title);
+    setEditColor(board.color);
+  }
+
+  async function handleUpdateBoard(e: React.SyntheticEvent) {
+    e.preventDefault();
+    if (!selectedBoard) return;
+    await updateBoard(selectedBoard.id, { title: editTitle, color: editColor });
+    setSelectedBoard(null);
+  }
+
+  async function handleDeleteBoard(boardId: string) {
+    await deleteBoard(boardId);
+  }
 
   const totalTasks = boards.reduce((acc, b) => acc + (b.tasks?.length || 0), 0);
   const avgTasks = boards.length > 0 ? totalTasks / boards.length : 0;
@@ -198,7 +220,6 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Boards */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
             <div className="w-fit sm:w-80">
@@ -318,6 +339,8 @@ export default function DashboardPage() {
                   key={board.id}
                   board={board}
                   isNew={isNewBoard(board.created_at)}
+                  onEdit={handleEditBoard}
+                  onDelete={handleDeleteBoard}
                 />
               ))}
               <CreateBoardPlaceholder onClick={handleCreateBoard} />
@@ -329,6 +352,8 @@ export default function DashboardPage() {
                   <BoardCard
                     board={board}
                     isNew={isNewBoard(board.created_at)}
+                    onEdit={handleEditBoard}
+                    onDelete={handleDeleteBoard}
                     variant="list"
                   />
                 </div>
@@ -350,6 +375,16 @@ export default function DashboardPage() {
         open={showUpgradeDialog}
         onOpenChange={setShowUpgradeDialog}
         onUpgrade={() => router.push("/pricing")}
+      />
+
+      <EditBoardDialog
+        open={!!selectedBoard}
+        onOpenChange={(open) => !open && setSelectedBoard(null)}
+        onSubmit={handleUpdateBoard}
+        newTitle={editTitle}
+        onTitleChange={setEditTitle}
+        newColor={editColor}
+        onColorChange={setEditColor}
       />
     </div>
   );

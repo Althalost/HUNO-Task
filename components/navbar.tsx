@@ -121,6 +121,22 @@ export default function Navbar({
                   )}
                 </Button>
               )}
+
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonTrigger: {
+                      width: "36px",
+                      height: "36px",
+                      flexShrink: 0,
+                    },
+                    userButtonAvatarBox: {
+                      width: "36px",
+                      height: "36px",
+                    },
+                  },
+                }}
+              />
             </div>
           </div>
         </div>

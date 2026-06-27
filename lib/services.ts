@@ -63,6 +63,17 @@ export const boardService = {
 
     return data;
   },
+
+  async deleteBoard(supabase: SupabaseClient, boardId: string) {
+    const { error } = await supabase
+      .from("boards")
+      .delete()
+      .eq("id", Number(boardId))
+      .select()
+      .single();
+
+    if (error) throw error;
+  },
 };
 
 export const columnService = {
@@ -187,11 +198,6 @@ export const taskService = {
       .eq("id", Number(taskId))
       .select()
       .single();
-    console.log("error:", error);
-    console.log("updates que se mandan:", {
-      ...updates,
-      column_id: updates.column_id ? Number(updates.column_id) : undefined,
-    });
     if (error) throw error;
 
     return data;

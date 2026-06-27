@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useSupabase } from "../supabase/SupabaseProvider";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function useBoards() {
   const { user } = useUser();
@@ -80,7 +81,40 @@ export function useBoards() {
     }
   }
 
-  return { boards, loading, error, createBoard };
+  async function updateBoard(boardId: string, updates: Partial<Board>) {
+    try {
+      const updatedBoard = await boardService.updateBoard(
+        supabase!,
+        boardId,
+        updates,
+      );
+      setBoards((prev) =>
+        prev.map((b) => (b.id === boardId ? { ...b, ...updatedBoard } : b)),
+      );
+      return updatedBoard;
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to update board.";
+      setError(message);
+      toast.error(message);
+    }
+  }
+
+  async function deleteBoard(boardId: string) {
+    const previousBoards = boards;
+    setBoards((prev) => prev.filter((b) => b.id !== boardId));
+    try {
+      await boardService.deleteBoard(supabase!, boardId);
+    } catch (err) {
+      setBoards(previousBoards);
+      const message =
+        err instanceof Error ? err.message : "Failed to delete the board.";
+      setError(message);
+      toast.error(message);
+    }
+  }
+
+  return { boards, loading, error, createBoard, updateBoard, deleteBoard };
 }
 
 export function useBoard(boardId: string) {
@@ -90,6 +124,7 @@ export function useBoard(boardId: string) {
   const [columns, setColumns] = useState<ColumnWithTasks[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (boardId && supabase) {
@@ -119,22 +154,15 @@ export function useBoard(boardId: string) {
     }
   }
 
-  async function updateBoard(boardId: string, updates: Partial<Board>) {
+  async function deleteBoard(boardId: string) {
     try {
-      const updatedBoard = await boardService.updateBoard(
-        supabase!,
-        boardId,
-        updates,
-      );
-      setBoard(updatedBoard);
-      return updatedBoard;
+      await boardService.deleteBoard(supabase!, boardId);
+      router.push("/dashboard");
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to update the board.";
+        err instanceof Error ? err.message : "Failed to delete the board.";
       setError(message);
       toast.error(message);
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -320,7 +348,7 @@ export function useBoard(boardId: string) {
     columns,
     loading,
     error,
-    updateBoard,
+    deleteBoard,
     createRealTask,
     setColumns,
     moveTask,
