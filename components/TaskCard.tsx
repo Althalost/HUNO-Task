@@ -19,7 +19,11 @@ function getPriorityColor(priority: "low" | "medium" | "high"): string {
 export default function TaskCard({ task }: TaskCardProps) {
   return (
     <div className="cursor-grab active:cursor-grabbing border border-slate-200 bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] hover:bg-slate-50/90 transition-colors duration-100 overflow-hidden">
-      <div className={`h-1 w-full ${getPriorityColor(task.priority)}`} />
+      <div
+        className={`h-1 w-full ${getPriorityColor(task.priority)}`}
+        aria-label={`Priority: ${task.priority}`}
+        role="img"
+      />
       <div className="p-2">
         <div className="flex flex-col gap-0.5">
           <h4 className="font-normal text-slate-900 text-[13.5px] leading-4.25 wrap-break-word tracking-normal">
