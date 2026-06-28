@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogHeader,
@@ -8,6 +10,7 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface TaskFiltersDialogProps {
   open: boolean;
@@ -31,37 +34,37 @@ export default function TaskFiltersDialog({
     assignee: [] as string[],
     dueDate: null as string | null,
   });
+  const t = useTranslations("TaskFiltersDialog");
+
+  const priorities = ["low", "medium", "high"] as const;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
         <DialogHeader className="flex flex-cols justify-between pb-4">
           <DialogTitle className="text-xl font-bold text-slate-800">
-            Filter Tasks
+            {t("title")}
           </DialogTitle>
-          <p className="text-sm text-gray-600">
-            Filter tasks by priority, assignee, or due date.
-          </p>
+          <p className="text-sm text-gray-600">{t("description")}</p>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Priority</Label>
+            <Label>{t("priority")}</Label>
             <div className="flex flex-wrap gap-3 mt-2">
-              {["low", "medium", "high"].map((priority, key) => (
+              {priorities.map((priority) => (
                 <Button
+                  key={priority}
                   onClick={() => {
                     const newPriorities = localFilters.priority.includes(
                       priority,
                     )
                       ? localFilters.priority.filter((p) => p !== priority)
                       : [...localFilters.priority, priority];
-
                     setLocalFilters((prev) => ({
                       ...prev,
                       priority: newPriorities,
                     }));
                   }}
-                  key={priority}
                   variant={
                     localFilters.priority.includes(priority)
                       ? "default"
@@ -69,14 +72,14 @@ export default function TaskFiltersDialog({
                   }
                   size="sm"
                 >
-                  {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                  {t(priority)}
                 </Button>
               ))}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Due Date</Label>
+            <Label>{t("due_date")}</Label>
             <Input
               type="date"
               value={localFilters.dueDate || ""}
@@ -99,7 +102,7 @@ export default function TaskFiltersDialog({
                 onOpenChange(false);
               }}
             >
-              Clear Filters
+              {t("clear")}
             </Button>
             <Button
               onClick={() => {
@@ -107,7 +110,7 @@ export default function TaskFiltersDialog({
                 onOpenChange(false);
               }}
             >
-              Apply Filters
+              {t("apply")}
             </Button>
           </div>
         </div>

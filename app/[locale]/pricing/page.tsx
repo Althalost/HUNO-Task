@@ -1,7 +1,9 @@
 import Navbar from "@/components/Navbar";
 import { PricingTable } from "@clerk/nextjs";
+import { getTranslations } from "next-intl/server";
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const t = await getTranslations("PricingPage");
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
       <Navbar />
@@ -9,14 +11,12 @@ export default function PricingPage() {
       <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
-            💎 Simple, transparent pricing
+            {t("badge")}
           </span>
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            Choose Your Plan
+            {t("title")}
           </h1>
-          <p className="text-lg text-slate-600">
-            Start for free. Upgrade when you need more.
-          </p>
+          <p className="text-lg text-slate-600">{t("description")}</p>
         </div>
 
         <div className="flex justify-center">

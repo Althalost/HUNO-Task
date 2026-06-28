@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/card";
 import { boardsWithTasksCount } from "@/lib/supabase/models";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface BoardCardProps {
   board: boardsWithTasksCount;
@@ -35,11 +36,14 @@ export default function BoardCard({
   onEdit,
 }: BoardCardProps) {
   const router = useRouter();
+  const params = useParams();
+  const locale = params?.locale ?? "en";
+  const t = useTranslations("BoardCard");
 
   return (
     <Card
       className="hover:shadow-lg transition-shadow select-none cursor-pointer group"
-      onClick={() => router.push(`/boards/${board.id}`)}
+      onClick={() => router.push(`/${locale}/boards/${board.id}`)}
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
@@ -47,7 +51,7 @@ export default function BoardCard({
           <div className="flex items-center gap-2">
             {isNew && (
               <Badge className="text-xs" variant="secondary">
-                New
+                {t("new")}
               </Badge>
             )}
             <DropdownMenu>
@@ -67,14 +71,14 @@ export default function BoardCard({
               >
                 <DropdownMenuItem onSelect={() => onEdit(board)}>
                   <Pencil className="w-4 h-4 mr-2" />
-                  Edit
+                  {t("edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => onDelete(board.id)}
                   className="text-red-600 focus:text-red-600"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -89,8 +93,16 @@ export default function BoardCard({
           {board.description}
         </CardDescription>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-300 space-y-1 sm:space-y-0">
-          <span>Created {new Date(board.created_at).toLocaleDateString()}</span>
-          <span>Updated {new Date(board.updated_at).toLocaleDateString()}</span>
+          <span>
+            {t("created", {
+              date: new Date(board.created_at).toLocaleDateString(),
+            })}
+          </span>
+          <span>
+            {t("updated", {
+              date: new Date(board.updated_at).toLocaleDateString(),
+            })}
+          </span>
         </div>
       </CardContent>
     </Card>

@@ -7,6 +7,7 @@ import {
 import { Button } from "./ui/button";
 import React from "react";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface EditBoardDialogProps {
   open: boolean;
@@ -27,12 +28,14 @@ export default function EditBoardDialog({
   newColor,
   onColorChange,
 }: EditBoardDialogProps) {
+  const t = useTranslations("EditBoardDialog");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
         <DialogHeader className="flex flex-row items-center justify-between pb-4">
           <DialogTitle className="text-2xl font-bold text-slate-800">
-            Edit Board
+            {t("title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -42,13 +45,13 @@ export default function EditBoardDialog({
               htmlFor="boardTitle"
               className="text-base font-semibold text-slate-800"
             >
-              Board Title
+              {t("board_title")}
             </label>
             <input
               id="boardTitle"
               value={newTitle}
               onChange={(e) => onTitleChange(e.target.value)}
-              placeholder="Board Title"
+              placeholder={t("board_title_placeholder")}
               required
               className="w-full h-12 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-lg text-slate-900 focus-visible:ring-slate-300 focus-visible:border-slate-300"
             />
@@ -56,7 +59,7 @@ export default function EditBoardDialog({
 
           <div className="space-y-4">
             <label className="text-base font-semibold text-slate-800">
-              Board Color
+              {t("board_color")}
             </label>
             <div className="grid grid-cols-6 gap-8 pt-1">
               {[
@@ -100,13 +103,13 @@ export default function EditBoardDialog({
               onClick={() => onOpenChange(false)}
               className="rounded-lg px-6 text-lg font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-100"
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               type="submit"
               className="rounded-lg px-7 text-lg font-semibold bg-slate-800 text-white hover:bg-slate-800 transition"
             >
-              Save Changes
+              {t("save")}
             </Button>
           </div>
         </form>

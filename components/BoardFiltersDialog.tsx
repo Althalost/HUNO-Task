@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Filters {
   search: string;
@@ -41,6 +44,7 @@ export default function BoardFiltersDialog({
   onClear,
 }: BoardFiltersDialogProps) {
   const [localFilters, setLocalFilters] = useState<Filters>(defaultFilters);
+  const t = useTranslations("BoardFiltersDialog");
 
   function handleClear() {
     setLocalFilters(defaultFilters);
@@ -56,16 +60,14 @@ export default function BoardFiltersDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-106.25 mx-auto">
         <DialogHeader>
-          <DialogTitle>Filter Boards</DialogTitle>
-          <p className="text-sm text-gray-600">
-            Filter boards by title, date, or task count.
-          </p>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <p className="text-sm text-gray-600">{t("description")}</p>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Search</Label>
+            <Label>{t("search")}</Label>
             <Input
-              placeholder="Search board title..."
+              placeholder={t("search_placeholder")}
               value={localFilters.search}
               onChange={(e) =>
                 setLocalFilters((prev) => ({ ...prev, search: e.target.value }))
@@ -73,10 +75,10 @@ export default function BoardFiltersDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label>Date Range</Label>
+            <Label>{t("date_range")}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
-                <Label className="text-xs">Start Date</Label>
+                <Label className="text-xs">{t("start_date")}</Label>
                 <Input
                   type="date"
                   value={localFilters.dateRange.start || ""}
@@ -92,7 +94,7 @@ export default function BoardFiltersDialog({
                 />
               </div>
               <div>
-                <Label className="text-xs">End Date</Label>
+                <Label className="text-xs">{t("end_date")}</Label>
                 <Input
                   type="date"
                   value={localFilters.dateRange.end || ""}
@@ -110,14 +112,14 @@ export default function BoardFiltersDialog({
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Task Count</Label>
+            <Label>{t("task_count")}</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
-                <Label className="text-xs">Minimum</Label>
+                <Label className="text-xs">{t("minimum")}</Label>
                 <Input
                   type="number"
                   min="0"
-                  placeholder="Min tasks"
+                  placeholder={t("min_placeholder")}
                   value={localFilters.taskCount.min ?? ""}
                   onChange={(e) =>
                     setLocalFilters((prev) => ({
@@ -131,11 +133,11 @@ export default function BoardFiltersDialog({
                 />
               </div>
               <div>
-                <Label className="text-xs">Maximum</Label>
+                <Label className="text-xs">{t("maximum")}</Label>
                 <Input
                   type="number"
                   min="0"
-                  placeholder="Max tasks"
+                  placeholder={t("max_placeholder")}
                   value={localFilters.taskCount.max ?? ""}
                   onChange={(e) =>
                     setLocalFilters((prev) => ({
@@ -152,9 +154,9 @@ export default function BoardFiltersDialog({
           </div>
           <div className="flex flex-col sm:flex-row justify-between pt-4 space-y-2 sm:space-y-0 sm:space-x-2">
             <Button variant="outline" onClick={handleClear}>
-              Clear Filters
+              {t("clear")}
             </Button>
-            <Button onClick={handleApply}>Apply Filters</Button>
+            <Button onClick={handleApply}>{t("apply")}</Button>
           </div>
         </div>
       </DialogContent>

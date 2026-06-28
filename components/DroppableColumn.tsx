@@ -1,5 +1,6 @@
 import { ClipboardList, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
+import { useTranslations } from "next-intl";
 import { Badge } from "./ui/badge";
 import CreateTaskDialog from "./CreateTaskDialog";
 import { useDroppable } from "@dnd-kit/core";
@@ -54,6 +55,7 @@ export default function DroppableColumn({
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isEditing = editingColumnId === column.id;
+  const t = useTranslations("DroppableColumn");
 
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
@@ -167,14 +169,14 @@ export default function DroppableColumn({
                   }}
                 >
                   <Pencil className="w-4 h-4 mr-2" />
-                  Rename
+                  {t("rename")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setShowDeleteAlert(true)}
                   className="text-red-600 focus:text-red-600"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
+                  {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -185,7 +187,7 @@ export default function DroppableColumn({
           {column.tasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-6 text-center">
               <ClipboardList className="w-6 h-6 text-slate-300" />
-              <p className="text-xs text-slate-400">No tasks yet</p>
+              <p className="text-xs text-slate-400">{t("no_tasks")}</p>
             </div>
           )}
           {children}
@@ -203,18 +205,18 @@ export default function DroppableColumn({
       <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete "{column.title}"</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the column and all its tasks.
-            </AlertDialogDescription>
+            <AlertDialogTitle>
+              {t("delete_title", { title: column.title })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>{t("delete_desc")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => onDeleteColumn(column.id)}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

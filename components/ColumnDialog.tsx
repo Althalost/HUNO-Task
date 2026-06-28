@@ -2,8 +2,10 @@ import {
   Dialog,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogContent,
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -24,26 +26,27 @@ export default function ColumnDialog({
   value,
   onChange,
 }: ColumnDialogProps) {
+  const t = useTranslations("ColumnDialog");
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
           <DialogHeader className="flex flex-cols justify-between pb-4">
             <DialogTitle className="text-xl font-bold text-slate-800">
-              "Create New Column"
+              {t("dialog_title")}
             </DialogTitle>
-            <p className="text-sm text-gray-600">
-              Add new column to organize your tasks
-            </p>
+            <DialogDescription className="text-sm text-slate-500">
+              {t("dialog_description")}
+            </DialogDescription>
           </DialogHeader>
           <form className="space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
-              <Label>Column Title</Label>
+              <Label>{t("input_label")}</Label>
               <Input
                 id="columnTitle"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                placeholder="Enter column title..."
+                placeholder={t("input_placeholder")}
               />
             </div>
             <div className="space-x-2 flex justify-end">
@@ -52,9 +55,9 @@ export default function ColumnDialog({
                 onClick={() => onOpenChange(false)}
                 variant="outline"
               >
-                Cancel
+                {t("cancel_btn")}
               </Button>
-              <Button type="submit">Create Column</Button>
+              <Button type="submit">{t("submit_btn")}</Button>
             </div>
           </form>
         </DialogContent>

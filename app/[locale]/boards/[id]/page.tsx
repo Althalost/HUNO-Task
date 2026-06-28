@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import { useBoard } from "@/lib/hooks/useBoards";
+import { useTranslations } from "next-intl";
 import { ColumnWithTasks, Task } from "@/lib/supabase/models";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -35,6 +36,7 @@ import TaskDetailsDialog from "@/components/TaskDetailsDialog";
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
+  const t = useTranslations("BoardPage");
   const {
     board,
     updateBoard,
@@ -362,7 +364,7 @@ export default function BoardPage() {
                 className="flex items-center gap-2 text-sm text-slate-500"
                 translate="no"
               >
-                <span className="font-medium">Total Tasks: </span>
+                <span className="font-medium">{t("total_tasks")}</span>
                 <span className="bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded-full text-xs">
                   {columns.reduce((sum, col) => sum + col.tasks.length, 0)}
                 </span>
@@ -421,7 +423,7 @@ export default function BoardPage() {
                   onClick={() => setIsCreatingColumn(true)}
                 >
                   <Plus className="w-4 h-4" />
-                  Add column
+                  {t("add_column_btn")}
                 </button>
 
                 <div

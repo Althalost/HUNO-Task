@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 import { Button } from "./ui/button";
 import { PlusIcon } from "lucide-react";
 import { Label } from "./ui/label";
@@ -35,6 +36,7 @@ export default function CreateTaskDialog({
   columnId,
   onCreateTask,
 }: CreateTaskDialogProps) {
+  const t = useTranslations("CreateTaskDialog");
   return (
     <Dialog
       open={open}
@@ -47,41 +49,44 @@ export default function CreateTaskDialog({
           onClick={() => onOpenChange(columnId)}
         >
           <PlusIcon />
-          Add Task
+          {t("add_task_btn")}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
         <DialogHeader className="flex flex-cols justify-between pb-4">
           <DialogTitle className="text-xl font-bold text-slate-800">
-            Create New Task
+            {t("dialog_title")}
           </DialogTitle>
-          <DialogDescription>Create New Task</DialogDescription>
-          <p className="text-sm text-gray-600">Add a task to the board.</p>
+          <DialogDescription>{t("dialog_description")}</DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={(e) => onCreateTask(e, columnId)}>
           <div className="space-y-2">
-            <Label>Title *</Label>
-            <Input id="title" name="title" placeholder="Enter task title" />
+            <Label>{t("title_label")}</Label>
+            <Input
+              id="title"
+              name="title"
+              placeholder={t("title_placeholder")}
+            />
           </div>
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>{t("desc_label")}</Label>
             <Textarea
               id="description"
               name="description"
-              placeholder="Enter task description"
+              placeholder="desc_placeholder"
               rows={3}
             />
           </div>
           <div className="space-y-2">
-            <Label>Assignee</Label>
+            <Label>"assignee_label"</Label>
             <Input
               id="assignee"
               name="assignee"
-              placeholder="Who should do this?"
+              placeholder={t("assignee_placeholder")}
             />
           </div>
           <div className="space-y-2">
-            <Label>Priority</Label>
+            <Label>{t("priority_label")}</Label>
             <Select name="priority" defaultValue="medium">
               <SelectTrigger>
                 <SelectValue />
@@ -95,7 +100,7 @@ export default function CreateTaskDialog({
                   <SelectItem key={p.value} value={p.value}>
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${p.color}`} />
-                      {p.value.charAt(0).toUpperCase() + p.value.slice(1)}
+                      {t(`priority_options.${p.value}` as any)}
                     </div>
                   </SelectItem>
                 ))}
@@ -103,12 +108,12 @@ export default function CreateTaskDialog({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Due Date</Label>
+            <Label>{t("due_date_label")}</Label>
             <Input type="date" id="dueDate" name="dueDate" />
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
-            <Button type="submit">Create Task</Button>
+            <Button type="submit">{t("submit_btn")}</Button>
           </div>
         </form>
       </DialogContent>

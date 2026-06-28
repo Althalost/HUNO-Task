@@ -62,5 +62,102 @@
     "error_desc": "Houve um problema ao conectar ao Supabase. Isso pode acontecer se o banco de dados estiver iniciando ou se sua sessão local expirou.",
     "retry": "Tentar novamente",
     "reload": "Recarregar página"
+  },
+  "BoardCard": {
+    "new": "Novo",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "created": "Criado {date}",
+    "updated": "Atualizado {date}"
+  },
+  "EditBoardDialog": {
+    "title": "Editar Quadro",
+    "board_title": "Título do Quadro",
+    "board_title_placeholder": "Título do Quadro",
+    "board_color": "Cor do Quadro",
+    "cancel": "Cancelar",
+    "save": "Salvar Alterações"
+  },
+  "BoardFiltersDialog": {
+    "title": "Filtrar Quadros",
+    "description": "Filtre quadros por título, data ou quantidade de tarefas.",
+    "search": "Buscar",
+    "search_placeholder": "Buscar título do quadro...",
+    "date_range": "Intervalo de Datas",
+    "start_date": "Data Inicial",
+    "end_date": "Data Final",
+    "task_count": "Quantidade de Tarefas",
+    "minimum": "Mínimo",
+    "maximum": "Máximo",
+    "min_placeholder": "Mín. tarefas",
+    "max_placeholder": "Máx. tarefas",
+    "clear": "Limpar Filtros",
+    "apply": "Aplicar Filtros"
+  },
+  "UpgradeDialog": {
+    "title": "Faça Upgrade para Criar Mais Quadros",
+    "description": "Usuários gratuitos só podem criar {bold_three}. Faça upgrade para {bold_pro} e crie {bold_unlimited}.",
+    "three": "três quadros",
+    "pro": "Pro",
+    "unlimited": "quadros ilimitados",
+    "cancel": "Cancelar",
+    "view_plans": "Ver Planos"
+  },
+  "TaskFiltersDialog": {
+    "title": "Filtrar Tarefas",
+    "description": "Filtre tarefas por prioridade, responsável ou prazo.",
+    "priority": "Prioridade",
+    "low": "Baixa",
+    "medium": "Média",
+    "high": "Alta",
+    "due_date": "Prazo",
+    "clear": "Limpar Filtros",
+    "apply": "Aplicar Filtros"
+  },
+  "DroppableColumn": {
+    "rename": "Renomear",
+    "delete": "Excluir",
+    "no_tasks": "Nenhuma tarefa ainda",
+    "delete_title": "Excluir \"{title}\"",
+    "delete_desc": "Isso excluirá permanentemente a coluna e todas as suas tarefas.",
+    "cancel": "Cancelar"
+  },
+  "CreateTaskDialog": {
+    "add_task_btn": "Adicionar Tarefa",
+    "dialog_title": "Criar Nova Tarefa",
+    "dialog_description": "Adicione una nova tarefa ao seu quadro.",
+    "title_label": "Título *",
+    "title_placeholder": "Digite o título da tarefa",
+    "desc_label": "Descrição",
+    "desc_placeholder": "Digite a descrição da tarefa",
+    "assignee_label": "Responsável",
+    "assignee_placeholder": "Quem deve fazer isso?",
+    "priority_label": "Prioridade",
+    "priority_options": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta"
+    },
+    "due_date_label": "Data de Vencimento",
+    "submit_btn": "Criar Tarefa"
+  },
+  "BoardPage": {
+    "total_tasks": "Total de Tarefas:",
+    "add_column_btn": "Adicionar coluna",
+    "edit_board_fallback": "Criar Novo App",
+    "assignee_fallback": "Quem deve fazer isso?"
+  },
+  "ColumnDialog": {
+    "dialog_title": "Criar Nova Coluna",
+    "dialog_description": "Adicione uma nova coluna para organizar suas tarefas.",
+    "input_label": "Título da Coluna",
+    "input_placeholder": "Digite o título da coluna...",
+    "cancel_btn": "Cancelar",
+    "submit_btn": "Criar Coluna"
+  },
+  "PricingPage": {
+    "badge": "💎 Preços simples e transparentes",
+    "title": "Escolha Seu Plano",
+    "description": "Comece gratuitamente. Atualize quando precisar de mais."
   }
 }
