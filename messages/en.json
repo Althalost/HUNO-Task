@@ -1,0 +1,66 @@
+{
+  "SignIn": {
+    "badge": "🚀 HUNOTASK 1.0 • LIVE WORKSPACE",
+    "title": "Manage your projects",
+    "title_highlight": "without the chaos.",
+    "subtitle": "Drag & drop tasks, track priorities, and collaborate — all in one board.",
+    "demo_title": "Try the demo",
+    "demo_credentials": "demo@hunotask.com · HunoTask2026"
+  },
+  "LandingPage": {
+    "badge": "🚀 HUNOTASK 1.0 • LIVE WORKSPACE",
+    "hero_title_1": "Manage your projects and tasks",
+    "hero_title_2": "without the chaos.",
+    "hero_subtitle": "A high-performance Kanban workspace built to bridge the gap between task management and interactive analytics. Track metrics, organize priorities, and deploy ideas faster.",
+    "btn_get_started": "Get Started Free",
+    "btn_learn_more": "Learn More",
+    "img_alt": "Hunotask High-Performance Kanban Dashboard Preview",
+    "features_title": "Everything you need to stay on track",
+    "features_subtitle": "Built with modern technologies to deliver a robust, snappy experience.",
+    "features": {
+      "kanban_title": "Kanban Workspace",
+      "kanban_desc": "Organize your tasks visually. Drag, drop, and structure your pipeline effortlessly across multiple customized columns.",
+      "metrics_title": "Real-time Metrics",
+      "metrics_desc": "Get an instant overview of your productivity. Track total boards, active tasks, and weekly activity from your dashboard.",
+      "filtering_title": "Advanced Filtering",
+      "filtering_desc": "Find what matters instantly. Search by title, filter by date range or task count across all your boards.",
+      "mobile_title": "Mobile Friendly",
+      "mobile_desc": "Drag and drop works seamlessly on touch devices. Manage your tasks on the go without losing any functionality.",
+      "priority_title": "Priority System",
+      "priority_desc": "Mark tasks as low, medium, or high priority. Visual indicators keep your team focused on what matters most.",
+      "assignment_title": "Task Assignment",
+      "assignment_desc": "Assign tasks to team members and set due dates. Keep everyone accountable with clear ownership and deadlines."
+    }
+  },
+  "Navbar": {
+    "dashboard": "Dashboard",
+    "filter": "Filter",
+    "welcome": "Welcome",
+    "go_to_dashboard": "Go to Dashboard",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up"
+  },
+  "Dashboard": {
+    "welcome": "Welcome back, {name}! ✨",
+    "overview": "Here's an overview of your boards and tasks for today.",
+    "stat_boards": "Total Boards",
+    "stat_tasks": "Total Tasks",
+    "stat_active": "Active This Week",
+    "stat_avg": "Avg. Tasks/Board",
+    "your_boards": "Your Boards",
+    "your_boards_desc": "Manage your projects and tasks",
+    "free_plan": "Free plan: {count}/3 boards used.",
+    "filter": "Filter",
+    "create_board": "Create Board",
+    "search_placeholder": "Search boards...",
+    "no_boards_title": "No boards yet",
+    "no_boards_desc": "Create your first board to start organizing your projects and tasks.",
+    "create_first_board": "Create your first board",
+    "no_results": "No boards match your filters.",
+    "clear_filters": "Clear filters",
+    "error_title": "Failed to load boards",
+    "error_desc": "There was a problem connecting to Supabase. This can happen if the database is waking up or if your local session has expired.",
+    "retry": "Retry connection",
+    "reload": "Reload page"
+  }
+}

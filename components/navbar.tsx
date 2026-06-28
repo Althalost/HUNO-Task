@@ -4,13 +4,14 @@ import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Filter, MoreHorizontal } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Badge } from "./ui/badge";
+import LocaleSwitcher from "./LocaleSwitcher";
 
 interface Props {
   boardTitle?: string;
   onEditBoard?: () => void;
-
   onFilterClick?: () => void;
   filterCount?: number;
 }
@@ -23,9 +24,12 @@ export default function Navbar({
 }: Props) {
   const { isSignedIn, user } = useUser();
   const pathname = usePathname();
+  const params = useParams();
+  const locale = params?.locale ?? "en";
+  const t = useTranslations("Navbar");
 
-  const isDashboardPage = pathname === "/dashboard";
-  const isBoardPage = pathname.startsWith("/boards/");
+  const isDashboardPage = pathname === `/${locale}/dashboard`;
+  const isBoardPage = pathname.startsWith(`/${locale}/boards/`);
 
   if (isDashboardPage) {
     return (
@@ -45,10 +49,7 @@ export default function Navbar({
                     height: "36px",
                     flexShrink: 0,
                   },
-                  userButtonAvatarBox: {
-                    width: "36px",
-                    height: "36px",
-                  },
+                  userButtonAvatarBox: { width: "36px", height: "36px" },
                 },
               }}
             />
@@ -65,11 +66,13 @@ export default function Navbar({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <Link
-                href="/dashboard"
+                href={`/${locale}/dashboard`}
                 className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm">Dashboard</span>
+                <span className="hidden sm:inline text-sm">
+                  {t("dashboard")}
+                </span>
               </Link>
 
               <div className="h-4 sm:h-6 w-px bg-gray-300 hidden sm:block shrink-0" />
@@ -87,7 +90,6 @@ export default function Navbar({
                   <span className="text-base font-semibold text-slate-700 truncate">
                     {boardTitle}
                   </span>
-
                   {onEditBoard && (
                     <Button
                       variant="ghost"
@@ -101,6 +103,7 @@ export default function Navbar({
                 </div>
               </div>
             </div>
+
             <div className="flex items-center space-x-2 sm:space-x-4 shrink-0">
               {onFilterClick && (
                 <Button
@@ -110,7 +113,7 @@ export default function Navbar({
                   onClick={onFilterClick}
                 >
                   <Filter className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Filter</span>
+                  <span className="hidden sm:inline">{t("filter")}</span>
                   {filterCount > 0 && (
                     <Badge
                       variant="secondary"
@@ -121,7 +124,6 @@ export default function Navbar({
                   )}
                 </Button>
               )}
-
               <UserButton
                 appearance={{
                   elements: {
@@ -130,10 +132,7 @@ export default function Navbar({
                       height: "36px",
                       flexShrink: 0,
                     },
-                    userButtonAvatarBox: {
-                      width: "36px",
-                      height: "36px",
-                    },
+                    userButtonAvatarBox: { width: "36px", height: "36px" },
                   },
                 }}
               />
@@ -143,6 +142,7 @@ export default function Navbar({
       </header>
     );
   }
+
   return (
     <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
@@ -154,28 +154,35 @@ export default function Navbar({
         {isSignedIn ? (
           <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
             <span className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-              Welcome, {user.firstName ?? user.emailAddresses[0].emailAddress}
+              {t("welcome")},{" "}
+              {user.firstName ?? user.emailAddresses[0].emailAddress}
             </span>
-            <Link href="/dashboard">
+            <Link href={`/${locale}/dashboard`}>
               <Button size="sm" className="text-xs sm:text-sm">
-                Go to Dashboard <ArrowRight />
+                {t("go_to_dashboard")} <ArrowRight />
               </Button>
             </Link>
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <SignInButton mode="redirect">
+            <LocaleSwitcher />
+            <SignInButton
+              mode="redirect"
+              forceRedirectUrl={`/${locale}/sign-in`}
+            >
               <Button
                 variant="ghost"
                 className="h-10 px-4 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer select-none rounded-xl"
               >
-                Sign In
+                {t("sign_in")}
               </Button>
             </SignInButton>
-
-            <SignUpButton mode="redirect">
-              <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-pointer select-none rounded-xl">
-                Sign Up
+            <SignUpButton
+              mode="redirect"
+              forceRedirectUrl={`/${locale}/sign-up`}
+            >
+              <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-none rounded-xl">
+                {t("sign_up")}
               </Button>
             </SignUpButton>
           </div>

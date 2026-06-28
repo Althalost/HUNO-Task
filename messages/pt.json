@@ -1,0 +1,66 @@
+{
+  "SignIn": {
+    "badge": "🚀 HUNOTASK 1.0 • ESPAÇO DE TRABALHO AO VIVO",
+    "title": "Gerencie seus projetos",
+    "title_highlight": "sem o caos.",
+    "subtitle": "Arraste e solte tarefas, acompanhe prioridades e colabore — tudo em um só quadro.",
+    "demo_title": "Experimente a demo",
+    "demo_credentials": "demo@hunotask.com · HunoTask2026"
+  },
+  "LandingPage": {
+    "badge": "🚀 HUNOTASK 1.0 • ESPAÇO DE TRABALHO EM TEMPO REAL",
+    "hero_title_1": "Gerencie seus projetos e tarefas",
+    "hero_title_2": "sem o caos.",
+    "hero_subtitle": "Um espaço de trabalho Kanban de alta performance construído para conectar o gerenciamento de tarefas à análise de métricas interativas. Monitore indicadores, organize prioridades e implemente ideias mais rápido.",
+    "btn_get_started": "Começar Grátis",
+    "btn_learn_more": "Saiba Mais",
+    "img_alt": "Visualização do Painel Kanban de Alta Performance do Hunotask",
+    "features_title": "Tudo o que você precisa para manter o foco",
+    "features_subtitle": "Desenvolvido com tecnologias modernas para entregar uma experiência robusta e ágil.",
+    "features": {
+      "kanban_title": "Espaço de Trabalho Kanban",
+      "kanban_desc": "Organize suas tarefas visualmente. Arraste, solte e estruture seu pipeline facilmente em várias colunas personalizadas.",
+      "metrics_title": "Métricas em Tempo Real",
+      "metrics_desc": "Tenha uma visão instantânea da sua produtividade. Monitore o total de quadros, tarefas ativas e atividade semanal diretamente do seu painel.",
+      "filtering_title": "Filtragem Avançada",
+      "filtering_desc": "Encontre o que importa instantaneamente. Pesquise por título, filtre por intervalo de datas ou contagem de tarefas em todos os seus quadros.",
+      "mobile_title": "Suporte para Dispositivos Móveis",
+      "mobile_desc": "O recurso de arrastar e soltar funciona perfeitamente em dispositivos de toque. Gerencie suas tarefas de onde estiver sem perder nenhuma funcionalidade.",
+      "priority_title": "Sistema de Prioridades",
+      "priority_desc": "Marque tarefas como prioridade baixa, média ou alta. Indicadores visuais mantêm sua equipe focada no que é mais importante.",
+      "assignment_title": "Atribuição de Tarefas",
+      "assignment_desc": "Atribua tarefas aos membros da equipe e defina prazos. Mantenha todos engajados com responsabilidades e prazos claros."
+    }
+  },
+  "Navbar": {
+    "dashboard": "Painel",
+    "filter": "Filtrar",
+    "welcome": "Bem-vindo",
+    "go_to_dashboard": "Ir ao Painel",
+    "sign_in": "Entrar",
+    "sign_up": "Cadastrar"
+  },
+  "Dashboard": {
+    "welcome": "Bem-vindo de volta, {name}! ✨",
+    "overview": "Aqui está um resumo dos seus quadros e tarefas de hoje.",
+    "stat_boards": "Total de Quadros",
+    "stat_tasks": "Total de Tarefas",
+    "stat_active": "Ativo Esta Semana",
+    "stat_avg": "Média de Tarefas/Quadro",
+    "your_boards": "Seus Quadros",
+    "your_boards_desc": "Gerencie seus projetos e tarefas",
+    "free_plan": "Plano gratuito: {count}/3 quadros usados.",
+    "filter": "Filtrar",
+    "create_board": "Criar Quadro",
+    "search_placeholder": "Buscar quadros...",
+    "no_boards_title": "Nenhum quadro ainda",
+    "no_boards_desc": "Crie seu primeiro quadro para começar a organizar seus projetos e tarefas.",
+    "create_first_board": "Criar seu primeiro quadro",
+    "no_results": "Nenhum quadro corresponde aos seus filtros.",
+    "clear_filters": "Limpar filtros",
+    "error_title": "Falha ao carregar quadros",
+    "error_desc": "Houve um problema ao conectar ao Supabase. Isso pode acontecer se o banco de dados estiver iniciando ou se sua sessão local expirou.",
+    "retry": "Tentar novamente",
+    "reload": "Recarregar página"
+  }
+}

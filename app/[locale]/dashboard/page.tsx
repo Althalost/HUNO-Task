@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
@@ -41,6 +43,9 @@ export default function DashboardPage() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState<boolean>(false);
   const [selectedBoard, setSelectedBoard] =
     useState<boardsWithTasksCount | null>(null);
+  const t = useTranslations("Dashboard");
+  const params = useParams();
+  const locale = params?.locale ?? "en";
   const [editTitle, setEditTitle] = useState("");
   const [editColor, setEditColor] = useState("");
 
@@ -145,11 +150,10 @@ export default function DashboardPage() {
         </div>
 
         <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-          Failed to load boards
+          {t("error_title")}
         </h3>
         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6 leading-relaxed">
-          There was a problem connecting to Supabase. This can happen if the
-          database is waking up or if your local session has expired.
+          {t("error_desc")}.
         </p>
 
         <div className="flex items-center gap-3">
@@ -160,16 +164,16 @@ export default function DashboardPage() {
             onClick={() => router.refresh()}
           >
             <RefreshCw className="h-4 w-4" />
-            <span>Retry connection</span>
+            <span>{t("retry")}</span>
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             className="h-10 px-4 text-slate-600 border-slate-200 bg-white shadow-sm hover:bg-slate-50"
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push(`/${locale}/dashboard`)}
           >
-            Reload page
+            {t("reload")}
           </Button>
         </div>
       </div>
@@ -183,37 +187,39 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold tracking-tight select-none text-slate-900 sm:text-3xl dark:text-slate-50">
-            Welcome back,{" "}
-            {user?.firstName ||
-              user?.emailAddresses[0]?.emailAddress.split("@")[0]}
-            ! ✨
+            {t("welcome", {
+              name:
+                user?.firstName ??
+                user?.emailAddresses[0]?.emailAddress.split("@")[0] ??
+                "",
+            })}
           </h1>
           <p className="text-sm text-muted-foreground mt-1 select-none">
-            Here's an overview of your boards and tasks for today.
+            {t("overview")}
           </p>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
-            label="Total Boards"
+            label={t("stat_boards")}
             value={boards.length}
             icon={LayoutDashboard}
             colorClass="bg-blue-100 text-blue-600"
           />
           <StatCard
-            label="Total Tasks"
+            label={t("stat_tasks")}
             value={totalTasks}
             icon={Rocket}
             colorClass="bg-green-100 text-green-600"
           />
           <StatCard
-            label="Active This Week"
+            label={t("stat_active")}
             value={activeThisWeek}
             icon={Activity}
             colorClass="bg-amber-100 text-amber-600"
           />
           <StatCard
-            label="Avg. Tasks/Board"
+            label={t("stat_avg")}
             value={avgTasksDisplay}
             icon={BarChart3}
             colorClass="bg-purple-100 text-purple-600"
@@ -224,14 +230,14 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
             <div className="w-fit sm:w-80">
               <h2 className="text-xl sm:text-2xl font-bold select-none text-gray-900">
-                Your Boards
+                {t("your_boards")}
               </h2>
               <p className="text-gray-600 select-none">
-                Manage your projects and tasks
+                {t("your_boards_desc")}
               </p>
               {isFreeUser && (
                 <p className=" text-sm mt-1 text-gray-600 select-none">
-                  Free plan: {boards.length}/3 boards used.
+                  {t("free_plan", { count: boards.length })}
                 </p>
               )}
             </div>
@@ -271,7 +277,7 @@ export default function DashboardPage() {
                   onClick={() => setIsFilterOpen(true)}
                 >
                   <Filter className="h-4 w-4 text-slate-500" />
-                  <span className="text-sm font-medium">Filter</span>
+                  <span className="text-sm font-medium">{t("filter")}</span>
                 </Button>
               </div>
 
@@ -281,7 +287,7 @@ export default function DashboardPage() {
                 onClick={handleCreateBoard}
               >
                 <PlusIcon className="h-4 w-4" />
-                <span>Create Board</span>
+                <span>{t("create_board")}</span>
               </Button>
             </div>
           </div>
@@ -290,7 +296,7 @@ export default function DashboardPage() {
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               id="search"
-              placeholder="Search boards..."
+              placeholder={t("search_placeholder")}
               className="pl-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-0"
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, search: e.target.value }))
@@ -305,11 +311,10 @@ export default function DashboardPage() {
                   <LayoutDashboard className="h-8 w-8 text-indigo-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-1">
-                  No boards yet
+                  {t("no_boards_title")}
                 </h3>
                 <p className="text-sm text-slate-400 mb-6 max-w-xs">
-                  Create your first board to start organizing your projects and
-                  tasks.
+                  {t("no_boards_desc")}
                 </p>
                 <Button
                   size="sm"
@@ -317,20 +322,18 @@ export default function DashboardPage() {
                   onClick={handleCreateBoard}
                 >
                   <PlusIcon className="h-4 w-4" />
-                  Create your first board
+                  {t("create_first_board")}
                 </Button>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <p className="text-sm text-slate-400">
-                  No boards match your filters.
-                </p>
+                <p className="text-sm text-slate-400">{t("no_results")}</p>
                 <Button
                   variant="ghost"
                   className="mt-2 text-indigo-600"
                   onClick={clearFilters}
                 >
-                  Clear filters
+                  {t("clear_filters")}
                 </Button>
               </div>
             )

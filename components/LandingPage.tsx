@@ -1,18 +1,15 @@
+"use client";
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import { useTranslations } from "next-intl";
 import { Smartphone, Flag, Users } from "lucide-react";
-import {
-  LayoutDashboard,
-  KanbanSquare,
-  Zap,
-  BarChart3,
-  ArrowRight,
-} from "lucide-react";
+import { KanbanSquare, Zap, BarChart3, ArrowRight } from "lucide-react";
 import { SignUpButton } from "@clerk/nextjs";
 import Image from "next/image";
 
 export default function Home() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const t = useTranslations("LandingPage");
   const [loading, setLoading] = useState(false);
 
   if (loading) {
@@ -32,23 +29,21 @@ export default function Home() {
 
       <header className="container mx-auto px-4 pt-16 pb-12 sm:pt-24 sm:pb-20 text-center max-w-4xl">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 mb-4 animate-pulse">
-          🚀 HUNOTASK 1.0 • LIVE WORKSPACE
+          {t(`badge`)}
         </span>
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent leading-tight">
-          Manage your projects and tasks <br />
+          {t(`hero_title_1`)} <br />
           <span className="bg-linear-to-br from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            without the chaos.
+            {t(`hero_title_2`)}
           </span>
         </h1>
         <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          A high-performance Kanban workspace built to bridge the gap between
-          task management and interactive analytics. Track metrics, organize
-          priorities, and deploy ideas faster.
+          {t(`hero_subtitle`)}
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <SignUpButton mode="redirect">
             <button className="h-12 px-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all font-medium rounded-xl group cursor-pointer">
-              Get Started Free
+              {t(`btn_get_started`)}
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </SignUpButton>
@@ -56,7 +51,7 @@ export default function Home() {
             href="#features"
             className="h-12 px-6 w-full sm:w-auto inline-flex items-center justify-center border border-slate-200 bg-white/80 backdrop-blur-xs hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium rounded-xl transition-colors shadow-xs"
           >
-            Learn More
+            {t(`btn_learn_more`)}
           </a>
         </div>
       </header>
@@ -72,7 +67,7 @@ export default function Home() {
           <div className="relative w-full overflow-hidden rounded-b-xl bg-slate-50">
             <Image
               src="/dashboard-preview.jpeg"
-              alt="Hunotask High-Performance Kanban Dashboard Preview"
+              alt={t(`img_alt`)}
               width={1920}
               height={1080}
               sizes="(max-width: 1024px) 100vw, 1024px"
@@ -91,12 +86,9 @@ export default function Home() {
       >
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Everything you need to stay on track
+            {t("features_title")}
           </h2>
-          <p className="text-slate-600 mt-3">
-            Built with modern technologies to deliver a robust, snappy
-            experience.
-          </p>
+          <p className="text-slate-600 mt-3">{t(`features_subtitle`)}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -105,11 +97,10 @@ export default function Home() {
               <KanbanSquare className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Kanban Workspace
+              {t("features.kanban_title")}
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Organize your tasks visually. Drag, drop, and structure your
-              pipeline effortlessly across multiple customized columns.
+              {t("features.kanban_desc")}
             </p>
           </div>
 
@@ -118,11 +109,10 @@ export default function Home() {
               <Zap className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Real-time Metrics
+              {t("features.metrics_title")}
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Get an instant overview of your productivity. Track total boards,
-              active tasks, and weekly activity from your dashboard.
+              {t("features.metrics_desc")}
             </p>
           </div>
 
@@ -131,11 +121,10 @@ export default function Home() {
               <BarChart3 className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Advanced Filtering
+              {t("features.filtering_title")}
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Find what matters instantly. Search by title, filter by date range
-              or task count across all your boards.
+              {t("features.filtering_desc")}
             </p>
           </div>
 
@@ -144,11 +133,10 @@ export default function Home() {
               <Smartphone className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Mobile Friendly
+              {t("features.mobile_title")}
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Drag and drop works seamlessly on touch devices. Manage your tasks
-              on the go without losing any functionality.
+              {t("features.mobile_desc")}
             </p>
           </div>
 
@@ -157,11 +145,10 @@ export default function Home() {
               <Flag className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Priority System
+              {t("features.priority_title")}
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Mark tasks as low, medium, or high priority. Visual indicators
-              keep your team focused on what matters most.
+              {t("features.priority_desc")}
             </p>
           </div>
 
@@ -170,11 +157,10 @@ export default function Home() {
               <Users className="h-6 w-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 mb-2">
-              Task Assignment
+              {t("features.assignment_title")}
             </h3>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Assign tasks to team members and set due dates. Keep everyone
-              accountable with clear ownership and deadlines.
+              {t("features.assignment_desc")}
             </p>
           </div>
         </div>
