@@ -19,6 +19,17 @@ import { boardsWithTasksCount } from "@/lib/supabase/models";
 import { Button } from "./ui/button";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 interface BoardCardProps {
   board: boardsWithTasksCount;
@@ -39,6 +50,7 @@ export default function BoardCard({
   const params = useParams();
   const locale = params?.locale ?? "en";
   const t = useTranslations("BoardCard");
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   return (
     <Card
@@ -74,7 +86,7 @@ export default function BoardCard({
                   {t("edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onSelect={() => onDelete(board.id)}
+                  onSelect={() => setShowDeleteAlert(true)}
                   className="text-red-600 focus:text-red-600"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
@@ -105,6 +117,25 @@ export default function BoardCard({
           </span>
         </div>
       </CardContent>
+      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("delete_title", { title: board.title })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>{t("delete_desc")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDelete(board.id)}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

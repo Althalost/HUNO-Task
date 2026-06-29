@@ -66,6 +66,9 @@
     "new": "New",
     "edit": "Edit",
     "delete": "Delete",
+    "cancel": "Cancel",
+    "delete_title": "Delete \"{title}\"",
+    "delete_desc": "This will permanently delete the board and all its columns and tasks.",
     "created": "Created {date}",
     "updated": "Updated {date}"
   },

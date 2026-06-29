@@ -66,8 +66,11 @@
     "new": "Novo",
     "edit": "Editar",
     "delete": "Excluir",
-    "created": "Criado {date}",
-    "updated": "Atualizado {date}"
+    "cancel": "Cancelar",
+    "delete_title": "Excluir \"{title}\"",
+    "delete_desc": "Isso vai excluir permanentemente o board e todas as suas colunas e tarefas.",
+    "created": "Criado em {date}",
+    "updated": "Atualizado em {date}"
   },
   "EditBoardDialog": {
     "title": "Editar Quadro",
