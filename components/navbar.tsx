@@ -9,150 +9,168 @@ import { useTranslations } from "next-intl";
 import { Badge } from "./ui/badge";
 import LocaleSwitcher from "./LocaleSwitcher";
 
-interface Props {
+interface NavbarProps {
   boardTitle?: string;
   onEditBoard?: () => void;
   onFilterClick?: () => void;
   filterCount?: number;
 }
 
-export default function Navbar({
+function BrandLogo() {
+  return (
+    <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 select-none">
+      HUNO<span className="text-indigo-600">TASK</span>
+    </span>
+  );
+}
+
+function NavUserControls() {
+  return (
+    <UserButton
+      appearance={{
+        elements: {
+          userButtonTrigger: { width: "36px", height: "36px", flexShrink: 0 },
+          userButtonAvatarBox: { width: "36px", height: "36px" },
+        },
+      }}
+    />
+  );
+}
+
+function DashboardNav() {
+  return (
+    <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+        <BrandLogo />
+        <div className="flex items-center space-x-4 select-none">
+          <LocaleSwitcher />
+          <NavUserControls />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+interface BoardNavProps {
+  locale: string;
+  boardTitle?: string;
+  onEditBoard?: () => void;
+  onFilterClick?: () => void;
+  filterCount: number;
+}
+
+function BoardNav({
+  locale,
   boardTitle,
   onEditBoard,
   onFilterClick,
-  filterCount = 0,
-}: Props) {
-  const { isSignedIn, user } = useUser();
-  const pathname = usePathname();
-  const params = useParams();
-  const locale = params?.locale ?? "en";
+  filterCount,
+}: BoardNavProps) {
   const t = useTranslations("Navbar");
 
-  const isDashboardPage = pathname === `/${locale}/dashboard`;
-  const isBoardPage = pathname.startsWith(`/${locale}/boards/`);
+  return (
+    <header className="bg-white border-b sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-2 sm:py-4">
+        <div className="flex sm:hidden items-center justify-between">
+          <Link
+            href={`/${locale}/dashboard`}
+            className="text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
 
-  if (isDashboardPage) {
-    return (
-      <div>
-        <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <h1 className="text-xl sm:text-2xl font-extrabold select-none tracking-tight text-slate-900">
-                HUNO<span className="text-indigo-600">TASK</span>
-              </h1>
-            </div>
-            <UserButton
-              appearance={{
-                elements: {
-                  userButtonTrigger: {
-                    width: "36px",
-                    height: "36px",
-                    flexShrink: 0,
-                  },
-                  userButtonAvatarBox: { width: "36px", height: "36px" },
-                },
-              }}
-            />
-          </div>
-        </header>
-      </div>
-    );
-  }
-
-  if (isBoardPage) {
-    return (
-      <header className="bg-white border-b pt-1 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-              <Link
-                href={`/${locale}/dashboard`}
-                className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+            <span className="text-base font-semibold text-slate-800 truncate max-w-45">
+              {boardTitle}
+            </span>
+            {onEditBoard && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 shrink-0 p-0"
+                onClick={onEditBoard}
               >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm">
-                  {t("dashboard")}
-                </span>
-              </Link>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
-              <div className="h-4 sm:h-6 w-px bg-gray-300 hidden sm:block shrink-0" />
+          <NavUserControls />
+        </div>
 
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
-                  <span className="sm:hidden">HT</span>
-                  <span className="hidden sm:inline">
-                    HUNO<span className="text-indigo-600">TASK</span>
-                  </span>
-                </span>
+        <div className="hidden sm:flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <Link
+              href={`/${locale}/dashboard`}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">{t("dashboard")}</span>
+            </Link>
 
-                <div className="flex items-center gap-1 min-w-0">
-                  <span className="text-slate-300">·</span>
-                  <span className="text-base font-semibold text-slate-700 truncate">
-                    {boardTitle}
-                  </span>
-                  {onEditBoard && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 shrink-0 p-0"
-                      onClick={onEditBoard}
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
+            <div className="h-6 w-px bg-gray-300 shrink-0" />
 
-            <div className="flex items-center space-x-2 sm:space-x-4 shrink-0">
-              {onFilterClick && (
+            <BrandLogo />
+
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="text-slate-300">·</span>
+              <span className="text-xl font-semibold text-slate-700 truncate">
+                {boardTitle}
+              </span>
+              {onEditBoard && (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className={`text-xs sm:text-sm ${filterCount > 0 ? "bg-slate-100 border-slate-200" : ""}`}
-                  onClick={onFilterClick}
+                  className="h-7 w-7 shrink-0 p-0"
+                  onClick={onEditBoard}
                 >
-                  <Filter className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">{t("filter")}</span>
-                  {filterCount > 0 && (
-                    <Badge
-                      variant="secondary"
-                      className={`text-xs ml-1 sm:ml-2 ${filterCount > 0 ? "bg-slate-100 border-slate-200" : ""}`}
-                    >
-                      {filterCount}
-                    </Badge>
-                  )}
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
               )}
-              <UserButton
-                appearance={{
-                  elements: {
-                    userButtonTrigger: {
-                      width: "36px",
-                      height: "36px",
-                      flexShrink: 0,
-                    },
-                    userButtonAvatarBox: { width: "36px", height: "36px" },
-                  },
-                }}
-              />
             </div>
           </div>
+
+          <div className="flex items-center gap-4 shrink-0">
+            <LocaleSwitcher />
+            {onFilterClick && (
+              <Button
+                variant="outline"
+                size="sm"
+                className={`text-sm ${filterCount > 0 ? "bg-slate-100 border-slate-200" : ""}`}
+                onClick={onFilterClick}
+              >
+                <Filter className="h-5 w-5 mr-2" />
+                {t("filter")}
+                {filterCount > 0 && (
+                  <Badge
+                    variant="secondary"
+                    className="text-xs ml-2 bg-slate-100 border-slate-200"
+                  >
+                    {filterCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
+            <NavUserControls />
+          </div>
         </div>
-      </header>
-    );
-  }
+      </div>
+    </header>
+  );
+}
+
+function PublicNav({ locale }: { locale: string }) {
+  const { isSignedIn, user } = useUser();
+  const t = useTranslations("Navbar");
 
   return (
     <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
-            HUNO<span className="text-indigo-600">TASK</span>
-          </h1>
-        </div>
+        <BrandLogo />
+
         {isSignedIn ? (
           <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
+            <LocaleSwitcher />
             <span className="text-xs sm:text-sm text-gray-600 hidden sm:block">
               {t("welcome")},{" "}
               {user.firstName ?? user.emailAddresses[0].emailAddress}
@@ -184,4 +202,33 @@ export default function Navbar({
       </div>
     </header>
   );
+}
+
+export default function Navbar({
+  boardTitle,
+  onEditBoard,
+  onFilterClick,
+  filterCount = 0,
+}: NavbarProps) {
+  const pathname = usePathname();
+  const params = useParams();
+  const locale = (params?.locale ?? "en") as string;
+
+  const isDashboard = pathname === `/${locale}/dashboard`;
+  const isBoard = pathname.startsWith(`/${locale}/boards/`);
+
+  if (isDashboard) return <DashboardNav />;
+
+  if (isBoard)
+    return (
+      <BoardNav
+        locale={locale}
+        boardTitle={boardTitle}
+        onEditBoard={onEditBoard}
+        onFilterClick={onFilterClick}
+        filterCount={filterCount}
+      />
+    );
+
+  return <PublicNav locale={locale} />;
 }
