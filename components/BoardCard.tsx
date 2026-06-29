@@ -128,7 +128,10 @@ export default function BoardCard({
           <AlertDialogFooter>
             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => onDelete(board.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(board.id);
+              }}
               className="bg-red-600 hover:bg-red-700"
             >
               {t("delete")}
