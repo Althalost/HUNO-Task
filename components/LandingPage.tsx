@@ -66,7 +66,7 @@ export default function Home() {
 
           <div className="relative w-full overflow-hidden rounded-b-xl bg-slate-50">
             <Image
-              src="/dashboard-preview.jpeg"
+              src="/dashboard-prev.jpeg"
               alt={t(`img_alt`)}
               width={1920}
               height={1080}

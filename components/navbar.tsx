@@ -166,10 +166,7 @@ export default function Navbar({
         ) : (
           <div className="flex items-center gap-3">
             <LocaleSwitcher />
-            <SignInButton
-              mode="redirect"
-              forceRedirectUrl={`/${locale}/sign-in`}
-            >
+            <SignInButton mode="redirect">
               <Button
                 variant="ghost"
                 className="h-10 px-4 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer select-none rounded-xl"
@@ -177,10 +174,7 @@ export default function Navbar({
                 {t("sign_in")}
               </Button>
             </SignInButton>
-            <SignUpButton
-              mode="redirect"
-              forceRedirectUrl={`/${locale}/sign-up`}
-            >
+            <SignUpButton mode="redirect">
               <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-none rounded-xl">
                 {t("sign_up")}
               </Button>

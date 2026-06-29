@@ -46,15 +46,23 @@ export default async function SignInPage({
         </Link>
 
         <div className="w-full max-w-md mb-6">
-          <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
-            <span className="text-xl">👀</span>
-            <div>
-              <p className="font-semibold text-amber-900 text-sm">
+          <div className="flex items-start gap-3 p-4 bg-amber-50/80 border border-amber-200/80 rounded-2xl shadow-xs transition-all hover:border-amber-300">
+            <span className="text-xl select-none mt-0.5">👀</span>
+
+            <div className="space-y-1 w-full">
+              <p className="font-semibold text-amber-950 text-sm">
                 {t("demo_title")}
               </p>
-              <p className="text-amber-700 text-xs mt-0.5">
-                {t("demo_credentials")}
-              </p>
+
+              <div className="flex flex-wrap items-center gap-2 text-amber-800 text-xs font-mono bg-amber-100/50 py-1 px-2 rounded-md w-fit select-all">
+                <span>
+                  <strong>User:</strong> demo@hunotask.com
+                </span>
+                <span className="hidden sm:inline text-amber-300">|</span>
+                <span>
+                  <strong>Pass:</strong> HunoTask2026
+                </span>
+              </div>
             </div>
           </div>
         </div>
