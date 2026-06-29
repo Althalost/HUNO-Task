@@ -163,6 +163,23 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function updateBoard(boardId: string, updates: Partial<Board>) {
+    try {
+      const updatedBoard = await boardService.updateBoard(
+        supabase!,
+        boardId,
+        updates,
+      );
+      setBoard((prev) => (prev ? { ...prev, ...updatedBoard } : null));
+      return updatedBoard;
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to update board.";
+      setError(message);
+      toast.error(message);
+    }
+  }
+
   async function deleteBoard(boardId: string) {
     try {
       await boardService.deleteBoard(supabase!, boardId);
@@ -357,6 +374,7 @@ export function useBoard(boardId: string) {
     columns,
     loading,
     error,
+    updateBoard,
     deleteBoard,
     createRealTask,
     setColumns,
