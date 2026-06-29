@@ -17,11 +17,11 @@ export default function LocaleSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-1 text-sm font-medium">
+    <div className="flex items-center gap-0.5 sm:gap-1 text-xs sm:text-sm font-medium">
       <button
         onClick={() => switchLocale("en")}
         disabled={isPending}
-        className={`px-2 py-1 rounded-md transition-colors ${
+        className={`px-1 py-0.5 sm:px-2 sm:py-1 rounded-md transition-colors ${
           locale === "en"
             ? "text-slate-900 font-semibold"
             : "text-slate-400 hover:text-slate-600"
@@ -33,7 +33,7 @@ export default function LocaleSwitcher() {
       <button
         onClick={() => switchLocale("pt")}
         disabled={isPending}
-        className={`px-2 py-1 rounded-md transition-colors ${
+        className={`px-1 py-0.5 sm:px-2 sm:py-1 rounded-md transition-colors ${
           locale === "pt"
             ? "text-slate-900 font-semibold"
             : "text-slate-400 hover:text-slate-600"

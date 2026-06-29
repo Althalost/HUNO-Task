@@ -75,7 +75,7 @@
     "board_title_placeholder": "Board Title",
     "board_color": "Board Color",
     "cancel": "Cancel",
-    "save": "Save Changes"
+    "save": "Save"
   },
   "BoardFiltersDialog": {
     "title": "Filter Boards",
@@ -95,9 +95,11 @@
   },
   "UpgradeDialog": {
     "title": "Upgrade to Create More Boards",
-    "description": "Free users can only create {bold_three}. Upgrade to {bold_pro} to create {bold_unlimited}.",
+    "description_start": "Free users can only create",
     "three": "three boards",
+    "description_mid": "Upgrade to",
     "pro": "Pro",
+    "description_end": "to create",
     "unlimited": "unlimited boards",
     "cancel": "Cancel",
     "view_plans": "View Plans"
@@ -140,6 +142,23 @@
     "due_date_label": "Due Date",
     "submit_btn": "Create Task"
   },
+  "TaskDetailsDialog": {
+    "title": "Update Task",
+    "description": "Edit task details",
+    "title_label": "Title *",
+    "title_placeholder": "Enter task title",
+    "description_label": "Description",
+    "description_placeholder": "Enter task description",
+    "assignee_label": "Assignee",
+    "assignee_placeholder": "Who should do this?",
+    "priority_label": "Priority",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "due_date": "Due Date",
+    "delete": "Delete Task",
+    "update": "Update Task"
+  },
   "BoardPage": {
     "total_tasks": "Total Tasks:",
     "add_column_btn": "Add column",
@@ -158,5 +177,11 @@
     "badge": "💎 Simple, transparent pricing",
     "title": "Choose Your Plan",
     "description": "Start for free. Upgrade when you need more."
+  },
+  "DefaultColumns": {
+    "todo": "To Do",
+    "in_progress": "In Progress",
+    "review": "Review",
+    "done": "Done"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 import {
   boardDataService,
   boardService,
@@ -21,6 +22,8 @@ import { useRouter } from "next/navigation";
 export function useBoards() {
   const { user } = useUser();
   const { supabase } = useSupabase();
+
+  const t = useTranslations("DefaultColumns");
 
   const [boards, setBoards] = useState<boardsWithTasksCount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +69,12 @@ export function useBoards() {
         {
           ...boardData,
           userId: user.id,
+          defaultColumnTitles: [
+            t("todo"),
+            t("in_progress"),
+            t("review"),
+            t("done"),
+          ],
         },
       );
       const newBoardWithTasks: boardsWithTasksCount = {

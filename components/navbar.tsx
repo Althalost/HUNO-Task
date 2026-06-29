@@ -164,18 +164,18 @@ export default function Navbar({
             </Link>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <LocaleSwitcher />
             <SignInButton mode="redirect">
               <Button
                 variant="ghost"
-                className="h-10 px-4 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer select-none rounded-xl"
+                className="h-9 px-3 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer select-none rounded-xl"
               >
                 {t("sign_in")}
               </Button>
             </SignInButton>
             <SignUpButton mode="redirect">
-              <Button className="h-10 px-5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-none rounded-xl">
+              <Button className="h-9 px-3 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer select-none rounded-xl">
                 {t("sign_up")}
               </Button>
             </SignUpButton>

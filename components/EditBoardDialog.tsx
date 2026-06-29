@@ -32,7 +32,7 @@ export default function EditBoardDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
+      <DialogContent className="container w-[95vw] mx-auto px-4 py-6 rounded-3xl bg-white shadow-2xl overflow-hidden">
         <DialogHeader className="flex flex-row items-center justify-between pb-4">
           <DialogTitle className="text-2xl font-bold text-slate-800">
             {t("title")}
@@ -61,7 +61,7 @@ export default function EditBoardDialog({
             <label className="text-base font-semibold text-slate-800">
               {t("board_color")}
             </label>
-            <div className="grid grid-cols-6 gap-8 pt-1">
+            <div className="grid grid-cols-6 gap-2 pt-1 w-full">
               {[
                 "bg-blue-500",
                 "bg-green-500",
@@ -74,29 +74,28 @@ export default function EditBoardDialog({
                 "bg-cyan-500",
                 "bg-emerald-500",
                 "bg-teal-500",
+                "bg-rose-500",
               ].map((color) => {
                 const isSelected = color === newColor;
                 return (
                   <button
                     key={color}
                     type="button"
-                    className={`group relative aspect-square rounded-full ${color} cursor-pointer transition-all duration-200 hover:scale-105 shadow-sm flex items-center justify-center ${
+                    className={`w-7 h-7 rounded-full ${color} cursor-pointer flex items-center justify-center ${
                       isSelected
-                        ? "ring-4 ring-offset-2 ring-slate-950 shadow-lg scale-105"
-                        : "hover:shadow-md"
+                        ? "ring-2 ring-offset-1 ring-slate-950 shadow-lg"
+                        : "hover:opacity-80"
                     }`}
                     onClick={() => onColorChange(color)}
                   >
-                    {isSelected && (
-                      <Check className="w-6 h-6 text-white animate-in fade-in zoom-in-50 duration-150" />
-                    )}
+                    {isSelected && <Check className="w-4 h-4 text-white" />}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+          <div className="flex justify-end gap-2 pt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="ghost"

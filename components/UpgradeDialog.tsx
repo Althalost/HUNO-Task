@@ -36,22 +36,22 @@ export default function UpgradeDialog({
             {t("title")}
           </DialogTitle>
 
-          <DialogDescription className="text-sm text-slate-500 max-w-70">
-            {t.rich("description", {
-              bold_three: () => (
-                <span className="font-semibold text-slate-700">
-                  {t("three")}
-                </span>
-              ),
-              bold_pro: () => (
-                <span className="text-violet-600 font-bold">{t("pro")}</span>
-              ),
-              bold_unlimited: () => (
-                <span className="font-semibold text-slate-700">
-                  {t("unlimited")}
-                </span>
-              ),
-            })}
+          <DialogDescription
+            asChild
+            className="text-sm text-slate-500 max-w-70"
+          >
+            <p className="text-sm text-slate-500 max-w-70">
+              {t("description_start")}{" "}
+              <span className="font-semibold text-slate-700">{t("three")}</span>
+              {". "}
+              {t("description_mid")}{" "}
+              <span className="text-violet-600 font-bold">{t("pro")}</span>{" "}
+              {t("description_end")}{" "}
+              <span className="font-semibold text-slate-700">
+                {t("unlimited")}
+              </span>
+              .
+            </p>
           </DialogDescription>
         </DialogHeader>
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { Task } from "@/lib/supabase/models";
 import {
   Dialog,
@@ -13,6 +15,7 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface TaskDetailsDialogProps {
   task: Task;
@@ -29,11 +32,18 @@ export default function TaskDetailsDialog({
   onUpdateTask,
   onDeleteTask,
 }: TaskDetailsDialogProps) {
+  const t = useTranslations("TaskDetailsDialog");
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? "");
   const [assignee, setAssignee] = useState(task.assignee ?? "");
   const [priority, setPriority] = useState(task.priority);
   const [dueDate, setDueDate] = useState(task.due_date ?? "");
+
+  const priorities = [
+    { value: "low", color: "bg-green-500" },
+    { value: "medium", color: "bg-yellow-500" },
+    { value: "high", color: "bg-red-500" },
+  ] as const;
 
   useEffect(() => {
     setTitle(task.title);
@@ -42,14 +52,15 @@ export default function TaskDetailsDialog({
     setPriority(task.priority);
     setDueDate(task.due_date ?? "");
   }, [task.id]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[95vw] max-w-106.25 mx-auto p-6 rounded-3xl bg-white shadow-2xl">
         <DialogHeader className="flex flex-cols justify-between pb-4">
           <DialogTitle className="text-xl font-bold text-slate-800">
-            Update Task
+            {t("title")}
           </DialogTitle>
-          <DialogDescription>Edit task details</DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <form
           className="space-y-4"
@@ -66,38 +77,40 @@ export default function TaskDetailsDialog({
           }}
         >
           <div className="space-y-2">
-            <Label>Title *</Label>
+            <Label>{t("title_label")}</Label>
             <Input
               id="title"
               name="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={!title ? "Enter task title" : undefined}
+              placeholder={!title ? t("title_placeholder") : undefined}
             />
           </div>
           <div className="space-y-2">
-            <Label>Description</Label>
+            <Label>{t("description_label")}</Label>
             <Textarea
               id="description"
               name="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={!description ? "Enter task description" : undefined}
+              placeholder={
+                !description ? t("description_placeholder") : undefined
+              }
               rows={3}
             />
           </div>
           <div className="space-y-2">
-            <Label>Assignee</Label>
+            <Label>{t("assignee_label")}</Label>
             <Input
               id="assignee"
               name="assignee"
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
-              placeholder={!assignee ? "Who should do this?" : undefined}
+              placeholder={!assignee ? t("assignee_placeholder") : undefined}
             />
           </div>
           <div className="space-y-2">
-            <Label>Priority</Label>
+            <Label>{t("priority_label")}</Label>
             <Select
               value={priority}
               onValueChange={(value: "low" | "medium" | "high") =>
@@ -115,21 +128,15 @@ export default function TaskDetailsDialog({
                           : "bg-green-500"
                     }`}
                   />
-                  <span>
-                    {priority.charAt(0).toUpperCase() + priority.slice(1)}
-                  </span>
+                  <span>{t(priority)}</span>
                 </div>
               </SelectTrigger>
               <SelectContent position="popper">
-                {[
-                  { value: "low", color: "bg-green-500" },
-                  { value: "medium", color: "bg-yellow-500" },
-                  { value: "high", color: "bg-red-500" },
-                ].map((p) => (
+                {priorities.map((p) => (
                   <SelectItem key={p.value} value={p.value}>
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${p.color}`} />
-                      {p.value.charAt(0).toUpperCase() + p.value.slice(1)}
+                      {t(p.value)}
                     </div>
                   </SelectItem>
                 ))}
@@ -137,7 +144,7 @@ export default function TaskDetailsDialog({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Due Date</Label>
+            <Label>{t("due_date")}</Label>
             <Input
               type="date"
               id="dueDate"
@@ -155,10 +162,9 @@ export default function TaskDetailsDialog({
               onClick={() => onDeleteTask(task.id, task.column_id)}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete Task
+              {t("delete")}
             </Button>
-
-            <Button type="submit">Update Task</Button>
+            <Button type="submit">{t("update")}</Button>
           </div>
         </form>
       </DialogContent>

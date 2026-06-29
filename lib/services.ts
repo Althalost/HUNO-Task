@@ -12,7 +12,7 @@ export const boardService = {
     const { data, error } = await supabase
       .from("boards")
       .select("*")
-      .eq("id", boardId)
+      .eq("id", Number(boardId))
       .single();
 
     if (error) throw error;
@@ -55,7 +55,7 @@ export const boardService = {
     const { data, error } = await supabase
       .from("boards")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq("id", boardId)
+      .eq("id", Number(boardId))
       .select()
       .single();
 
@@ -77,14 +77,14 @@ export const boardService = {
 };
 
 export const columnService = {
-  async getColums(
+  async getColumns(
     supabase: SupabaseClient,
     boardId: string,
   ): Promise<Column[]> {
     const { data, error } = await supabase
       .from("columns")
       .select("*")
-      .eq("board_id", boardId)
+      .eq("board_id", Number(boardId))
       .order("sort_order", { ascending: true });
 
     if (error) throw error;
@@ -119,7 +119,7 @@ export const columnService = {
     const { data, error } = await supabase
       .from("columns")
       .update({ title })
-      .eq("id", columnId)
+      .eq("id", Number(columnId))
       .select()
       .single();
 
@@ -185,7 +185,7 @@ export const taskService = {
     taskId: string,
     task: Partial<Task>,
   ): Promise<Task> {
-    const { id, created_at, sort_order, ...updates } = task as any;
+    const { id, created_at, sort_order, ...updates } = task as Task;
     const { data, error } = await supabase
       .from("tasks")
       .update({
@@ -240,7 +240,7 @@ export const boardDataService = {
   async getBoardWithColumns(supabase: SupabaseClient, boardId: string) {
     const [board, columns] = await Promise.all([
       boardService.getBoard(supabase, boardId),
-      columnService.getColums(supabase, boardId),
+      columnService.getColumns(supabase, boardId),
     ]);
 
     if (!board) throw new Error("Board not found");
@@ -298,6 +298,7 @@ export const boardDataService = {
       description?: string;
       color?: string;
       userId: string;
+      defaultColumnTitles: [string, string, string, string];
     },
   ) {
     const board = await boardService.createBoard(supabase, {
@@ -307,12 +308,12 @@ export const boardDataService = {
       user_id: boardData.userId,
     });
 
-    const defaultColumns = [
-      { title: "To Do", sort_order: 0 },
-      { title: "In Progress", sort_order: 1 },
-      { title: "Review", sort_order: 2 },
-      { title: "Done", sort_order: 3 },
-    ];
+    const defaultColumns = boardData.defaultColumnTitles.map(
+      (title, index) => ({
+        title,
+        sort_order: index,
+      }),
+    );
 
     await Promise.all(
       defaultColumns.map((column) =>
